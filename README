@@ -1,0 +1,20 @@
+Integrantes:
+    José Pinto - 202073559-K
+    Ernesto Barria - 202073521-2
+
+Instrucciones en Windows:
+    - Ejecutar Docker
+    - Abrir 2 terminales en el siguiente orden, en cada una de ellas ejecutar los siguientes comandos:
+        Terminal 1: 
+            cd .\servidor_central\
+            docker build -t servidor_central .
+            docker run -p 8080:8080/udp servidor_central
+
+        Terminal 2:
+            go run usuario.go
+
+Supuestos:
+    - La cantidad máxima de botín por planeta es de 50 (Se puede modificar el valor de n en servidor_central.go, luego recompilar y ejecutar)
+    - Los capitanes pueden encontrar un planeta en un lapso aleatorio entre 0 y 3 segundos (se puede cambiar el valor de la cantidad de milisegundos máxima en la línea 74 de usuario.go, luego guardar y ejecutar)
+    - Los capitanes encuentran botines extra, además de los contemplados por el servidor central, por lo que solo se agregan nuevos.
+    - Cuando todos los planetas tienen la misma cantidad de botín, el servidor central notifica a los capitanes para que dejen de buscar y finalizan los dos programas.
