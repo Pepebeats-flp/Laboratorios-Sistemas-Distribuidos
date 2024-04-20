@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package pb;
+
+option go_package = "nombre_de_tu_modulo/pb";
+
+service MyService {
+    rpc MyMethod(RequestMessage) returns (ResponseMessage);
+}
+
+message RequestMessage {
+    string request_field = 1;
+}
+
+message ResponseMessage {
+    string response_field = 1;
+}
