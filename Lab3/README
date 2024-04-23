@@ -1,0 +1,25 @@
+Integrantes:
+    José Pinto - 202073559-K
+    Ernesto Barria - 202073521-2
+
+Instrucciones en Linux:
+    1.- Abrir Docker Desktop.
+    2.- Para compilar el servidor, ejecutar el comando "make server" (puede necesitar permisos de superusuario).
+	3.- Para compilar el cliente, ejecutar el comando "make client" en una terminal distinta a la del servidor.
+	4.- Para ejecutar el servidor sin volver a crear el contenedor, ejecutar el comando "make run".
+	5.- Para cerrar el servidor, ejecutar control + c en la terminal donde se ejecutó el servidor.
+
+proto:
+	protoc -I=. --go_out=. --go-grpc_out=. servidor_central/protocolo.proto
+
+docker: proto
+	docker build -t lab3 .
+
+server: docker
+	docker run -p 6969:6969 lab3
+
+run:
+	docker run -p 6969:6969 lab3
+
+client:
+	go run client.go

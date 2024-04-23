@@ -1,14 +1,16 @@
-.PHONY: all server client clean
+.PHONY: client proto docker server
 
-all: server client
+proto:
+	protoc -I=. --go_out=. --go-grpc_out=. servidor_central/protocolo.proto
 
-server:
-	cd servidor_central && go build -o ../server server.go
-	./server &
+docker: proto
+	sudo docker build -t lab3 .
+
+server: docker
+	sudo docker run -p 6969:6969 lab3
+
+run:
+	sudo docker run -p 6969:6969 lab3
 
 client:
-	go build -o client client.go
-	./client
-
-clean:
-	rm -f server client
+	go run client.go

@@ -1,0 +1,12 @@
+FROM golang:1.22.2
+
+WORKDIR /app
+
+COPY . .
+RUN go mod download
+
+RUN go build -o server ./server/main.go
+
+EXPOSE 6969
+
+CMD ["./server/main"]

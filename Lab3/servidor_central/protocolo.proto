@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package servidor_central;
+option go_package = "servidor_central/";
+
+message PedirMunicion {
+    int32 id = 1;
+    int32 at = 2;
+    int32 mp = 3;
+}
+
+message RespuestaMunicion {
+    int32 respuesta = 1;
+}
+
+service ServidorCentral {
+    rpc SolicitudMunicion(PedirMunicion) returns (RespuestaMunicion);
+}
+

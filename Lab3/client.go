@@ -1,59 +1,73 @@
 package main
 
 import (
+	"Lab3/servidor_central"
 	"context"
 	"fmt"
 	"log"
 	"math/rand"
+	"sync"
 	"time"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
-func random_integer(n int, m int) int {
-	return n + rand.Intn(m-n)
+type Naves struct {
+	ID int
+	AT int
+	MP int
 }
 
 func main() {
-
 	// Conexión con el servidor
-	conn, err := grpc.Dial("localhost:50051", grpc.WithInsecure())
+	puerto := ":6969"
+	conn, err := grpc.Dial(puerto, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		log.Fatalf("Error al conectar: %v", err)
+		log.Fatalf("Error al conectar en el puerto:"+puerto+" %v", err)
 	}
 	defer conn.Close()
 
-	// Crear un cliente
-	c := pb.NewHelloWorldClient(conn)
+	cliente := servidor_central.NewServidorCentralClient(conn)
 
-	// Llamada al servidor
-	r, err := c.SayHello(context.Background(), &pb.HelloRequest{Name: "usuario"})
-	if err != nil {
-		log.Fatalf("Error al llamar al servidor: %v", err)
-	}
-	log.Printf("Respuesta del servidor: %s", r.Message)
+	// Crear los 4 clientes
+	naves := make([]Naves, 4)
+	for i := 1; i <= 4; i++ {
+		at := rand.Intn(11) + 20
+		mp := rand.Intn(6) + 10
 
-	start := time.Now().Second()
-	for time.Now().Second()-start < 10 {
-		// Esperar 7 segundos
-		time.Sleep(70 * time.Millisecond)
+		naves[i-1] = Naves{ID: i, AT: at, MP: mp}
 	}
 
-	AT := random_integer(20, 30)
-	MP := random_integer(10, 15)
-	acc := false
-	for !acc {
-		// Esperar 3 segundos
-		time.Sleep(70 * time.Millisecond)
-		acc = true // Consulta al servidor (borrar true al agregar consulta)
+	wg := sync.WaitGroup{}
+	wg.Add(4)
+	for i := 0; i < 4; i++ {
 
-		fmt.Print("Solicitando", AT, "y", MP, "MP ; ")
-		if acc {
-			fmt.Println("Resolución: -- APROBADA -- ; Conquista Exitosa!, cerrando comunicación")
-		} else {
-			fmt.Println("Resolución: -- DENEGADA -- ; Reintentando en 3 segs...")
-		}
+		go func(i int) {
+			defer wg.Done()
+			time.Sleep(10 * time.Second)
+			peticion := servidor_central.PedirMunicion{
+				Id: int32(naves[i].ID),
+				At: int32(naves[i].AT),
+				Mp: int32(naves[i].MP),
+			}
+			for {
+				respuesta, err := cliente.SolicitudMunicion(context.Background(), &peticion)
+				if err != nil {
+					log.Fatalf("No se pudo realizar la solicitud: %v", err)
+				}
 
+				auxiliar := respuesta.Respuesta
+				fmt.Print("Solicitando AT: ", naves[i].AT, " y MP: ", naves[i].MP)
+				if auxiliar == 1 {
+					fmt.Printf("Resolución: -- APROBADA -- ; Conquista Exitosa!, cerrando comunicación\n")
+					return
+				} else {
+					fmt.Printf("Resolución: -- DENEGADA -- ; Reintentando en 3 segs...\n")
+					time.Sleep(3 * time.Second)
+				}
+			}
+		}(i)
 	}
-
+	wg.Wait()
 }
