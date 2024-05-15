@@ -30,6 +30,27 @@ func writeToFile(mercenary string, floor string, amount string) {
 	}
 }
 
+func readFromFile() string {
+	file, err := os.Open("dosh_bank.txt")
+	if err != nil {
+		log.Fatal("Cannot open file", err)
+	}
+	defer file.Close()
+
+	stat, err := file.Stat()
+	if err != nil {
+		log.Fatal("Cannot get file info", err)
+	}
+
+	data := make([]byte, stat.Size())
+	_, err = file.Read(data)
+	if err != nil {
+		log.Fatal("Cannot read file", err)
+	}
+
+	return string(data)
+}
+
 func failOnError(err error, msg string) {
 	if err != nil {
 		log.Fatalf("%s: %s", msg, err)
@@ -69,6 +90,12 @@ func main() {
 	// Create file at the beginning
 	createFile()
 
+	// initial amount
+	amount := 0
+
+	// Print initial amount
+	log.Printf(" [x] Amount: %d\n", amount)
+
 	// Loop to receive messages
 	for d := range msgs {
 		log.Printf("Received a message: %s", d.Body)
@@ -79,13 +106,18 @@ func main() {
 		mercenary := components[0]
 		floor := components[1]
 
-		// Initialize the amount to 0 each time
-		amount := 0
+		// Increment the amount
+		amount += 100000000
+
+		// Print the updated amount
+		log.Printf(" [x] Amount: %d\n", amount)
 
 		// Write the components to the file
 		writeToFile(mercenary, floor, fmt.Sprintf("%d", amount))
 	}
 
-	log.Printf(" [*] Waiting for messages. To exit press CTRL+C")
-	select {}
+	// Read the file
+	log.Printf(" [x] File content: %s", readFromFile())
+	// reinitialize the amount
+	amount = 0
 }
