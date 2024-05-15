@@ -111,14 +111,19 @@ func main() {
 			// Write the components to the file
 			writeToFile(mercenary, floor, fmt.Sprintf("%d", amount))
 
-			// Print the file content
-			log.Printf("File content: %s", readFromFile())
+			// Read the file and print its contents
+			log.Printf("File contents: %s", readFromFile())
 
 			// Print the amount
 			log.Printf("Amount: %d", amount)
+
+			// Print the message
+			log.Printf(" [x] Received %s", body)
+
 		}
 	}()
 
-	log.Printf(" [*] Waiting for messages. To exit press CTRL+C")
 	<-forever
 }
+
+// Path: Lab4/Dosh_Bank/bank.go
