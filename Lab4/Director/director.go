@@ -52,10 +52,8 @@ func main() {
 	log.Print("eroor: ", err)
 	failOnError(err, "Failed to publish a message")
 
-	if err != nil {
+	//<nil>
+	if err == nil {
 		log.Printf(" [x] Sent %s", body)
-	} else {
-		log.Printf(" [x] Failed to send %s", body)
 	}
-
 }
