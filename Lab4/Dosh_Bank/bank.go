@@ -90,7 +90,7 @@ func main() {
 	// Create file at the beginning
 	createFile()
 
-	// Monto acumulado
+	// initial amount
 	amount := 0
 
 	// Print initial amount
@@ -115,4 +115,9 @@ func main() {
 		// Write the components to the file
 		writeToFile(mercenary, floor, fmt.Sprintf("%d", amount))
 	}
+
+	// Read the file
+	log.Printf(" [x] File content: %s", readFromFile())
+	// reinitialize the amount
+	amount = 0
 }
