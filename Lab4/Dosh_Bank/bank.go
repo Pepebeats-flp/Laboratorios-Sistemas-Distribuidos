@@ -101,6 +101,9 @@ func main() {
 		nil,    // args
 	)
 	failOnError(err, "Failed to register a consumer")
+	if err != nil {
+		log.Fatal("Failed to register a consumer", err)
+	}
 
 	var forever chan struct{}
 
