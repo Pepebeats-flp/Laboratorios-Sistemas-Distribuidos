@@ -88,7 +88,7 @@ func main() {
 	)
 	failOnError(err, "Failed to register a consumer")
 
-	var forever chan struct{}
+	var forever = make(chan struct{})
 
 	// Create the file
 	createFile()
