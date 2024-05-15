@@ -1,18 +1,3 @@
-// 5.3 Dosh Bank
-// Es el encargado de mantener el conteo del monto acumulado por los mercenarios en la misi ́on.
-// Debe crear un archivo txt donde se registre cada uno de los mercenarios eliminados y el monto acumulado actual.
-
-//El Dosh Bank debe ser capaz de:
-// • Registrar cada uno de los mercenarios eliminados en el archivo txt de la siguiente forma:
-// – Mercenario Numero_piso Monto_acumulado_actual
-//- . . .
-//– D.A.R. Piso 1 100000000
-//– Mr.Foster Piso 2 200000000
-//• Responder a las peticiones sobre el monto actual acumulado
-//Este proceso debe estar corriendo solamente en una de las m ́aquinas virtuales.
-// Debe proce- sar de manera as ́ıncrona, mediante RabbitMQ, el registro de mercenarios eliminados,
-// pero de manera s ́ıncrona responder a la petici ́on del monto acumulado.
-
 package main
 
 import (
@@ -105,12 +90,9 @@ func main() {
 	var forever chan struct{}
 
 	go func() {
-
 		createFile()
-
 		// Monto acumulado
 		amount := 0
-
 		for d := range msgs {
 			log.Printf("Received a message: %s", d.Body)
 			//body := "Mercenario1,Piso_1"
@@ -129,6 +111,10 @@ func main() {
 
 			// Print the file content
 			log.Printf("File content: %s", readFromFile())
+
+			// Print the amount
+			log.Printf("Amount: %d", amount)
+
 		}
 	}()
 
