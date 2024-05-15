@@ -114,7 +114,6 @@ func main() {
 
 			// Print the amount
 			log.Printf("Amount: %d", amount)
-
 		}
 	}()
 
