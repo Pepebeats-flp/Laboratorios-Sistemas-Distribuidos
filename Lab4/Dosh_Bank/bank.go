@@ -124,6 +124,5 @@ func main() {
 	}()
 
 	<-forever
+	log.Printf(" [*] Waiting for messages. To exit press CTRL+C")
 }
-
-// Path: Lab4/Dosh_Bank/bank.go
