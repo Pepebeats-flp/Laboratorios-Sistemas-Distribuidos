@@ -12,7 +12,6 @@ cd Laboratorios-Sistemas-Distribuidos/Lab4
 make bank
 '''
 
-
 - Máquina Virtual Director (dist042)
 ssh dist@dist042.inf.santiago.usm.cl
 z2dghbNT3Pbw
