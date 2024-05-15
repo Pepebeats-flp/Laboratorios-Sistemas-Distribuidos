@@ -112,13 +112,14 @@ func main() {
 
 		// Monto acumulado
 		amount := 0
+		// Print amount
+		log.Printf(" [x] Amount: %d\n", amount)
 
 		// Loop to receive messages
 		for d := range msgs {
 			log.Printf("Received a message: %s", d.Body)
 			//body := "Mercenario1,Piso_1"
 			body := string(d.Body)
-
 			// Split the message into its components
 			// [Mercenary, Floor, Amount]
 			components := strings.Split(body, ",")
@@ -126,15 +127,11 @@ func main() {
 			floor := components[1]
 			// + 100.000.000 de libras
 			amount += 100000000
-
+			// Print the amount
+			log.Printf(" [x] Amount: %d\n", amount)
 			// Write the components to the file
 			writeToFile(mercenary, floor, fmt.Sprintf("%d", amount))
 
-			// Print the message
-			log.Printf(" [x] Received %s\n", body)
-
-			// Print the file
-			log.Printf(" [x] File content:\n%s", readFromFile())
 		}
 	}()
 
