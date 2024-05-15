@@ -10,12 +10,18 @@ import (
 
 func failOnError(err error, msg string) {
 	if err != nil {
-		log.Panicf("%s: %s", msg, err)
+		log.Fatalf("%s: %s", msg, err)
 	}
 }
 
 func main() {
 	conn, err := amqp.Dial("amqp://dist:dist@10.35.169.51:5672/")
+
+	if err != nil {
+		log.Printf(" [x] Failed to connect to RabbitMQ")
+	} else {
+		log.Printf(" [x] Connected to RabbitMQ")
+	}
 
 	failOnError(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
