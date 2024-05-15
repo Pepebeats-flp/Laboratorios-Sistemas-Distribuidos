@@ -100,11 +100,6 @@ func main() {
 	amount := 0
 
 	go func() {
-		<-stopSignal
-		log.Println("Shutting down...")
-		os.Exit(0)
-	}()
-	go func() {
 		for d := range msgs {
 			log.Printf("Received a message: %s", d.Body)
 			//body := "Mercenario_1,Piso_1"
@@ -135,5 +130,7 @@ func main() {
 	}()
 
 	log.Printf(" [*] Waiting for messages. To exit press CTRL+C")
+	<-stopSignal
 
+	log.Printf(" [*] Exiting")
 }
