@@ -87,9 +87,7 @@ func main() {
 		nil,    // args
 	)
 	failOnError(err, "Failed to register a consumer")
-	if err != nil {
-		log.Fatalf("Failed to register a consumer: %s", err)
-	}
+
 	var forever chan struct{}
 
 	// Create the file
