@@ -34,8 +34,6 @@ func initializeRabbitMQConnection() {
 }
 
 func sendDeathMessage(mercenary string, floor string) {
-	initializeRabbitMQConnection()
-
 	// Declare a queue if not already declared
 	q, err := ch.QueueDeclare(
 		"dosh_bank2", // name
@@ -67,6 +65,9 @@ func sendDeathMessage(mercenary string, floor string) {
 }
 
 func main() {
+
+	initializeRabbitMQConnection()
+
 	sendDeathMessage("Mercenario1", "Piso_1")
 	sendDeathMessage("Mercenario2", "Piso_2")
 	sendDeathMessage("Mercenario3", "Piso_3")
