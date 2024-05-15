@@ -1,14 +1,27 @@
-
 ssh jose.pinto@capela.inf.santiago.usm.cl
 
 
-Director
+Se separó la ejecución de cada comando por máquina virtual.
+
+- Máquina Virtual Dosh Bank (dist041)
 ssh dist@dist041.inf.santiago.usm.cl
 p8dL3dMHXAnc
+'''
+sudo su
+cd Laboratorios-Sistemas-Distribuidos/Lab4
+make bank
+'''
 
-Dosh_Bank
+
+- Máquina Virtual Director (dist042)
 ssh dist@dist042.inf.santiago.usm.cl
 z2dghbNT3Pbw
+'''
+sudo su
+cd Laboratorios-Sistemas-Distribuidos/Lab4
+make director
+'''
+
 
 ssh dist@dist043.inf.santiago.usm.cl
 NBVXvgS9YezX

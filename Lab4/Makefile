@@ -1,5 +1,5 @@
 director:
-	cd Director && go run director.go
+	cd Lab4/Director && go run director.go
 
 bank:
-	cd Dosh_Bank && go run bank.go
+	cd Lab4/Dosh_Bank && go run bank.go
