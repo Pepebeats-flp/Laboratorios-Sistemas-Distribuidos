@@ -88,11 +88,10 @@ func main() {
 	)
 	failOnError(err, "Failed to register a consumer")
 
-	var forever chan bool
+	var forever chan struct{}
 
 	// Create the file
 	createFile()
-
 	// Read the file and print its contents
 	log.Printf("File contents: %s", readFromFile())
 
@@ -114,21 +113,16 @@ func main() {
 
 			// + 100.000.000 de libras
 			amount += 100000000
-
 			// Write the components to the file
 			writeToFile(mercenary, floor, fmt.Sprintf("%d", amount))
-
 			// Read the file and print its contents
 			log.Printf("File contents: %s", readFromFile())
-
 			// Print the amount
 			log.Printf("Amount: %d", amount)
-
 			// Print the message
 			log.Printf(" [x] Received %s", body)
 		}
 	}()
-
 	log.Printf(" [*] Waiting for messages. To exit press CTRL+C")
 	<-forever
 }
