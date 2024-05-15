@@ -126,8 +126,6 @@ func main() {
 
 			// Write the components to the file
 			writeToFile(mercenary, floor, fmt.Sprintf("%d", amount))
-
-			log.Printf(" [x] Sent %s\n", body)
 		}
 	}()
 
