@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/signal"
 	"strings"
+	"syscall"
 
 	amqp "github.com/rabbitmq/amqp091-go"
 )
@@ -58,6 +60,10 @@ func failOnError(err error, msg string) {
 }
 
 func main() {
+	// Handle SIGINT and SIGTERM.
+	var stopSignal = make(chan os.Signal, 1)
+	signal.Notify(stopSignal, syscall.SIGINT, syscall.SIGTERM)
+
 	conn, err := amqp.Dial("amqp://dist:dist@10.35.169.52:5672/")
 	failOnError(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
@@ -87,12 +93,18 @@ func main() {
 	)
 	failOnError(err, "Failed to register a consumer")
 
-	var forever chan bool
+	// Create the file
+	createFile()
+
+	// Monto acumulado
+	amount := 0
 
 	go func() {
-		createFile()
-		// Monto acumulado
-		amount := 0
+		<-stopSignal
+		log.Println("Shutting down...")
+		os.Exit(0)
+	}()
+	go func() {
 		for d := range msgs {
 			log.Printf("Received a message: %s", d.Body)
 			//body := "Mercenario_1,Piso_1"
@@ -122,6 +134,6 @@ func main() {
 		}
 	}()
 
-	<-forever
 	log.Printf(" [*] Waiting for messages. To exit press CTRL+C")
+
 }
