@@ -14,16 +14,25 @@ func failOnError(err error, msg string) {
 	}
 }
 
-// Funcion q informa muerte de un mercenario
-// Se conecta a la cola de mensajes y envia un mensaje con el nombre del mercenario y el piso en el que murio
-// El mensaje es enviado a la cola "dosh_bank2"
-func sendDeathMessage(mercenary string, floor string) {
+func connectToRabbitMQ() (*amqp.Connection, *amqp.Channel) {
 	conn, err := amqp.Dial("amqp://dist:dist@dist041.inf.santiago.usm.cl:5672/")
 	failOnError(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
 
 	ch, err := conn.Channel()
 	failOnError(err, "Failed to open a channel")
+	defer ch.Close()
+
+	return conn, ch
+}
+
+// Funcion q informa muerte de un mercenario
+// Se conecta a la cola de mensajes y envia un mensaje con el nombre del mercenario y el piso en el que murio
+// El mensaje es enviado a la cola "dosh_bank2"
+func sendDeathMessage(mercenary string, floor string) {
+
+	conn, ch := connectToRabbitMQ()
+	defer conn.Close()
 	defer ch.Close()
 
 	q, err := ch.QueueDeclare(
@@ -52,10 +61,11 @@ func sendDeathMessage(mercenary string, floor string) {
 		})
 	failOnError(err, "Failed to publish a message")
 
-	log.Printf(" [x] Mercenary %s died on floor %s", mercenary, floor)
+	log.Printf(" [x] Mercenary %s died on floor %s", mercenary, floor[5:])
 
 }
 func main() {
+
 	sendDeathMessage("Mercenario1", "Piso_1")
 	sendDeathMessage("Mercenario2", "Piso_2")
 	sendDeathMessage("Mercenario3", "Piso_3")
