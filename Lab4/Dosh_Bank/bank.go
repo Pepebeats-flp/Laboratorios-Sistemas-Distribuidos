@@ -1,18 +1,3 @@
-// 5.3 Dosh Bank
-// Es el encargado de mantener el conteo del monto acumulado por los mercenarios en la misi ́on.
-// Debe crear un archivo txt donde se registre cada uno de los mercenarios eliminados y el monto acumulado actual.
-
-//El Dosh Bank debe ser capaz de:
-// • Registrar cada uno de los mercenarios eliminados en el archivo txt de la siguiente forma:
-// – Mercenario Numero_piso Monto_acumulado_actual
-//- . . .
-//– D.A.R. Piso 1 100000000
-//– Mr.Foster Piso 2 200000000
-//• Responder a las peticiones sobre el monto actual acumulado
-//Este proceso debe estar corriendo solamente en una de las m ́aquinas virtuales.
-// Debe proce- sar de manera as ́ıncrona, mediante RabbitMQ, el registro de mercenarios eliminados,
-// pero de manera s ́ıncrona responder a la petici ́on del monto acumulado.
-
 package main
 
 import (
@@ -101,39 +86,33 @@ func main() {
 		nil,    // args
 	)
 	failOnError(err, "Failed to register a consumer")
-	if err != nil {
-		log.Fatal("Failed to register a consumer", err)
-	}
 
-	forever := make(chan bool)
-	go func() {
+	// Create file at the beginning
+	createFile()
 
-		createFile()
+	// Monto acumulado
+	amount := 0
 
-		// Monto acumulado
-		amount := 0
-		// Print amount
+	// Print initial amount
+	log.Printf(" [x] Amount: %d\n", amount)
+
+	// Loop to receive messages
+	for d := range msgs {
+		log.Printf("Received a message: %s", d.Body)
+		body := string(d.Body)
+
+		// Split the message into its components
+		components := strings.Split(body, ",")
+		mercenary := components[0]
+		floor := components[1]
+
+		// Increment the amount
+		amount += 100000000
+
+		// Print the updated amount
 		log.Printf(" [x] Amount: %d\n", amount)
 
-		// Loop to receive messages
-		for d := range msgs {
-			log.Printf("Received a message: %s", d.Body)
-			//body := "Mercenario1,Piso_1"
-			body := string(d.Body)
-			// Split the message into its components
-			// [Mercenary, Floor, Amount]
-			components := strings.Split(body, ",")
-			mercenary := components[0]
-			floor := components[1]
-			// + 100.000.000 de libras
-			amount += 100000000
-			// Print the amount
-			log.Printf(" [x] Amount: %d\n", amount)
-			// Write the components to the file
-			writeToFile(mercenary, floor, fmt.Sprintf("%d", amount))
-		}
-	}()
-
-	log.Printf(" [*] Waiting for messages. To exit press CTRL+C")
-	<-forever
+		// Write the components to the file
+		writeToFile(mercenary, floor, fmt.Sprintf("%d", amount))
+	}
 }
