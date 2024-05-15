@@ -8,33 +8,35 @@ import (
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
+var conn *amqp.Connection
+var ch *amqp.Channel
+
 func failOnError(err error, msg string) {
 	if err != nil {
 		log.Panicf("%s: %s", msg, err)
 	}
 }
 
-func connectToRabbitMQ() (*amqp.Connection, *amqp.Channel) {
-	conn, err := amqp.Dial("amqp://dist:dist@dist041.inf.santiago.usm.cl:5672/")
-	failOnError(err, "Failed to connect to RabbitMQ")
-	defer conn.Close()
+func initializeRabbitMQConnection() {
+	// Connect to RabbitMQ if not already connected
+	if conn == nil {
+		var err error
+		conn, err = amqp.Dial("amqp://dist:dist@dist041.inf.santiago.usm.cl:5672/")
+		failOnError(err, "Failed to connect to RabbitMQ")
+	}
 
-	ch, err := conn.Channel()
-	failOnError(err, "Failed to open a channel")
-	defer ch.Close()
-
-	return conn, ch
+	// Open a channel if not already opened
+	if ch == nil {
+		var err error
+		ch, err = conn.Channel()
+		failOnError(err, "Failed to open a channel")
+	}
 }
 
-// Funcion q informa muerte de un mercenario
-// Se conecta a la cola de mensajes y envia un mensaje con el nombre del mercenario y el piso en el que murio
-// El mensaje es enviado a la cola "dosh_bank2"
 func sendDeathMessage(mercenary string, floor string) {
+	initializeRabbitMQConnection()
 
-	conn, ch := connectToRabbitMQ()
-	defer conn.Close()
-	defer ch.Close()
-
+	// Declare a queue if not already declared
 	q, err := ch.QueueDeclare(
 		"dosh_bank2", // name
 		false,        // durable
@@ -47,9 +49,9 @@ func sendDeathMessage(mercenary string, floor string) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-
 	body := mercenary + "," + floor
 
+	// Publish a message
 	err = ch.PublishWithContext(ctx,
 		"",     // exchange
 		q.Name, // routing key
@@ -62,11 +64,14 @@ func sendDeathMessage(mercenary string, floor string) {
 	failOnError(err, "Failed to publish a message")
 
 	log.Printf(" [x] Mercenary %s died on floor %s", mercenary, floor[5:])
-
 }
-func main() {
 
+func main() {
 	sendDeathMessage("Mercenario1", "Piso_1")
 	sendDeathMessage("Mercenario2", "Piso_2")
 	sendDeathMessage("Mercenario3", "Piso_3")
+
+	// Close the channel and connection when no longer needed
+	defer ch.Close()
+	defer conn.Close()
 }
