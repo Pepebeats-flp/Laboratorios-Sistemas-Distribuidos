@@ -17,6 +17,7 @@ func createFile() {
 	defer file.Close()
 }
 
+// "Mercenario_1,Piso_1"
 func writeToFile(mercenary string, floor string, amount string) {
 	file, err := os.OpenFile("dosh_bank.txt", os.O_APPEND|os.O_WRONLY, os.ModeAppend)
 	if err != nil {
@@ -24,7 +25,7 @@ func writeToFile(mercenary string, floor string, amount string) {
 	}
 	defer file.Close()
 
-	_, err = file.WriteString("- " + mercenary + " " + floor + " " + amount + "\n")
+	_, err = file.WriteString("- " + mercenary + " - " + floor + " - " + amount + "\n")
 	if err != nil {
 		log.Fatal("Cannot write to file", err)
 	}
@@ -95,7 +96,7 @@ func main() {
 		amount := 0
 		for d := range msgs {
 			log.Printf("Received a message: %s", d.Body)
-			//body := "Mercenario1,Piso_1"
+			//body := "Mercenario_1,Piso_1"
 			body := string(d.Body)
 
 			// Split the message into its components
@@ -103,6 +104,7 @@ func main() {
 			components := strings.Split(body, ",")
 			mercenary := components[0]
 			floor := components[1]
+
 			// + 100.000.000 de libras
 			amount += 100000000
 

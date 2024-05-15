@@ -37,7 +37,7 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	body := "Mercenario1,Piso_1"
+	body := "Mercenario_1,Piso_1"
 
 	err = ch.PublishWithContext(ctx,
 		"",     // exchange
