@@ -10,12 +10,13 @@ import (
 
 func failOnError(err error, msg string) {
 	if err != nil {
-		log.Fatalf("%s: %s", msg, err)
+		log.Panicf("%s: %s", msg, err)
 	}
 }
 
 func main() {
 	conn, err := amqp.Dial("amqp://dist:dist@10.35.169.51:5672/")
+
 	failOnError(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
 
@@ -36,7 +37,8 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	body := "Mercenario_1,Piso_1"
+	body := "Mercenario1,Piso_1"
+
 	err = ch.PublishWithContext(ctx,
 		"",     // exchange
 		q.Name, // routing key
@@ -48,4 +50,5 @@ func main() {
 		})
 	failOnError(err, "Failed to publish a message")
 	log.Printf(" [x] Sent %s\n", body)
+
 }

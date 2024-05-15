@@ -5,6 +5,7 @@ Se separó la ejecución de cada comando por máquina virtual.
 
 - Máquina Virtual Dosh Bank (dist041)
 ssh dist@dist041.inf.santiago.usm.cl
+ip = 10.35.169.51
 p8dL3dMHXAnc
 '''
 sudo su
@@ -14,6 +15,7 @@ make bank
 
 - Máquina Virtual Director (dist042)
 ssh dist@dist042.inf.santiago.usm.cl
+ip = 10.35.169.52
 z2dghbNT3Pbw
 '''
 sudo su

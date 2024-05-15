@@ -24,7 +24,7 @@ func writeToFile(mercenary string, floor string, amount string) {
 	}
 	defer file.Close()
 
-	_, err = file.WriteString("- " + mercenary + " - " + floor + " - " + amount + "\n")
+	_, err = file.WriteString("- " + mercenary + " " + floor + " " + amount + "\n")
 	if err != nil {
 		log.Fatal("Cannot write to file", err)
 	}
@@ -58,7 +58,6 @@ func failOnError(err error, msg string) {
 }
 
 func main() {
-
 	conn, err := amqp.Dial("amqp://dist:dist@10.35.169.52:5672/")
 	failOnError(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
@@ -88,21 +87,18 @@ func main() {
 	)
 	failOnError(err, "Failed to register a consumer")
 
-	var forever = make(chan struct{})
-
-	// Create the file
-	createFile()
-	// Read the file and print its contents
-	log.Printf("File contents: %s", readFromFile())
-
-	// Print the amount
-	amount := 0
-	log.Printf("Amount: %d", amount)
+	var forever chan struct{}
 
 	go func() {
+
+		createFile()
+
+		// Monto acumulado
+		amount := 0
+
 		for d := range msgs {
 			log.Printf("Received a message: %s", d.Body)
-			//body := "Mercenario_1,Piso_1"
+			//body := "Mercenario1,Piso_1"
 			body := string(d.Body)
 
 			// Split the message into its components
@@ -110,19 +106,17 @@ func main() {
 			components := strings.Split(body, ",")
 			mercenary := components[0]
 			floor := components[1]
-
 			// + 100.000.000 de libras
 			amount += 100000000
+
 			// Write the components to the file
 			writeToFile(mercenary, floor, fmt.Sprintf("%d", amount))
-			// Read the file and print its contents
-			log.Printf("File contents: %s", readFromFile())
-			// Print the amount
-			log.Printf("Amount: %d", amount)
-			// Print the message
-			log.Printf(" [x] Received %s", body)
+
+			// Print the file content
+			log.Printf("File content: %s", readFromFile())
 		}
 	}()
+
 	log.Printf(" [*] Waiting for messages. To exit press CTRL+C")
 	<-forever
 }
