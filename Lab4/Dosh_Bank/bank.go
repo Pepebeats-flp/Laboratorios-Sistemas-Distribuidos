@@ -1,12 +1,16 @@
 package main
 
 import (
-	"fmt"
+	"bufio"
 	"log"
 	"os"
+	"strconv"
 	"strings"
+	"sync" // Importar sync para manejar locks
+)
 
-	amqp "github.com/rabbitmq/amqp091-go"
+var (
+	mutex sync.Mutex // Definir un mutex para bloquear la escritura en el archivo
 )
 
 func createFile() {
@@ -14,7 +18,7 @@ func createFile() {
 	if err != nil {
 		log.Fatal("Cannot create file", err)
 	}
-	defer file.Close()
+	file.Close() // No se necesita defer aquí
 }
 
 func writeToFile(mercenary string, floor string, amount string) {
@@ -24,95 +28,43 @@ func writeToFile(mercenary string, floor string, amount string) {
 	}
 	defer file.Close()
 
+	// Bloquear la escritura para garantizar el orden correcto
+	mutex.Lock()
+	defer mutex.Unlock()
+
 	_, err = file.WriteString("- " + mercenary + " " + floor + " " + amount + "\n")
 	if err != nil {
 		log.Fatal("Cannot write to file", err)
 	}
 }
 
-func readFromFile() string {
+func readFromFile() (int, error) {
 	file, err := os.Open("dosh_bank.txt")
 	if err != nil {
-		log.Fatal("Cannot open file", err)
+		return 0, err
 	}
 	defer file.Close()
 
-	stat, err := file.Stat()
-	if err != nil {
-		log.Fatal("Cannot get file info", err)
+	var totalAmount int
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := scanner.Text()
+		parts := strings.Fields(line)
+		if len(parts) == 3 {
+			amountStr := parts[2]
+			amount, err := strconv.Atoi(amountStr)
+			if err != nil {
+				return 0, err
+			}
+			totalAmount += amount
+		}
 	}
 
-	data := make([]byte, stat.Size())
-	_, err = file.Read(data)
-	if err != nil {
-		log.Fatal("Cannot read file", err)
+	if err := scanner.Err(); err != nil {
+		return 0, err
 	}
 
-	return string(data)
-}
+	return totalAmount, nil
 
-func failOnError(err error, msg string) {
-	if err != nil {
-		log.Fatalf("%s: %s", msg, err)
-	}
-}
-
-func main() {
-	conn, err := amqp.Dial("amqp://dist:dist@dist041.inf.santiago.usm.cl:5672/")
-	failOnError(err, "Failed to connect to RabbitMQ")
-	defer conn.Close()
-
-	ch, err := conn.Channel()
-	failOnError(err, "Failed to open a channel")
-	defer ch.Close()
-
-	q, err := ch.QueueDeclare(
-		"dosh_bank2", // name
-		false,        // durable
-		false,        // delete when unused
-		false,        // exclusive
-		false,        // no-wait
-		nil,          // arguments
-	)
-	failOnError(err, "Failed to declare a queue")
-
-	msgs, err := ch.Consume(
-		q.Name, // queue
-		"",     // consumer
-		true,   // auto-ack
-		false,  // exclusive
-		false,  // no-local
-		false,  // no-wait
-		nil,    // args
-	)
-	failOnError(err, "Failed to register a consumer")
-
-	// Create file at the beginning
-	createFile()
-
-	// Monto acumulado
-	amount := 0
-
-	// Print initial amount
-	log.Printf(" [x] Amount: %d\n", amount)
-
-	// Loop to receive messages
-	for d := range msgs {
-		log.Printf("Received a message: %s", d.Body)
-		body := string(d.Body)
-
-		// Split the message into its components
-		components := strings.Split(body, ",")
-		mercenary := components[0]
-		floor := components[1]
-
-		// Increment the amount
-		amount += 100000000
-
-		// Print the updated amount
-		log.Printf(" [x] Amount: %d\n", amount)
-
-		// Write the components to the file
-		writeToFile(mercenary, floor, fmt.Sprintf("%d", amount))
-	}
 }
