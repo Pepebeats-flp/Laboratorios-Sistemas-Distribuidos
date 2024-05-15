@@ -97,24 +97,26 @@ func main() {
 	log.Printf(" [x] Amount: %d\n", amount)
 
 	// Loop to receive messages
-	for d := range msgs {
-		log.Printf("Received a message: %s", d.Body)
-		body := string(d.Body)
+	go func() {
+		for d := range msgs {
+			log.Printf("Received a message: %s", d.Body)
+			body := string(d.Body)
 
-		// Split the message into its components
-		components := strings.Split(body, ",")
-		mercenary := components[0]
-		floor := components[1]
+			// Split the message into its components
+			components := strings.Split(body, ",")
+			mercenary := components[0]
+			floor := components[1]
 
-		// Increment the amount
-		amount += 100000000
+			// Increment the amount
+			amount += 100000000
 
-		// Print the updated amount
-		log.Printf(" [x] Amount: %d\n", amount)
+			// Print the updated amount
+			log.Printf(" [x] Amount: %d\n", amount)
 
-		// Write the components to the file
-		writeToFile(mercenary, floor, fmt.Sprintf("%d", amount))
-	}
+			// Write the components to the file
+			writeToFile(mercenary, floor, fmt.Sprintf("%d", amount))
+		}
+	}()
 
 	// Read the file
 	log.Printf(" [x] File content: %s", readFromFile())
