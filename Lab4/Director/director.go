@@ -30,6 +30,12 @@ func main() {
 	failOnError(err, "Failed to open a channel")
 	defer ch.Close()
 
+	if err != nil {
+		log.Printf(" [x] Failed to open a channel")
+	} else {
+		log.Printf(" [x] Opened a channel")
+	}
+
 	q, err := ch.QueueDeclare(
 		"dosh_bank", // name
 		false,       // durable
@@ -40,8 +46,20 @@ func main() {
 	)
 	failOnError(err, "Failed to declare a queue")
 
+	if err != nil {
+		log.Printf(" [x] Failed to declare a queue")
+	} else {
+		log.Printf(" [x] Declared a queue")
+	}
+
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
+
+	if err != nil {
+		log.Printf(" [x] Failed to create a context")
+	} else {
+		log.Printf(" [x] Created a context")
+	}
 
 	body := "Mercenario_1,Piso_1"
 
