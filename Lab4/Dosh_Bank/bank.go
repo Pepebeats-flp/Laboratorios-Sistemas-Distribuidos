@@ -73,7 +73,7 @@ func failOnError(err error, msg string) {
 }
 
 func main() {
-	conn, err := amqp.Dial("amqp://dist:dist@dist041.inf.santiago.usm.cl:5672/")
+	conn, err := amqp.Dial("amqp://dist:dist@dist042.inf.santiago.usm.cl:5672/")
 	failOnError(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
 
@@ -131,7 +131,6 @@ func main() {
 			log.Printf(" [x] Amount: %d\n", amount)
 			// Write the components to the file
 			writeToFile(mercenary, floor, fmt.Sprintf("%d", amount))
-
 		}
 	}()
 
