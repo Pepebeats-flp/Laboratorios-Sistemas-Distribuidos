@@ -73,7 +73,7 @@ func failOnError(err error, msg string) {
 }
 
 func main() {
-	conn, err := amqp.Dial("amqp://dist:dist@dist042.inf.santiago.usm.cl:5672/")
+	conn, err := amqp.Dial("amqp://dist:dist@dist041.inf.santiago.usm.cl:5672/")
 	failOnError(err, "Failed to connect to RabbitMQ")
 	defer conn.Close()
 
@@ -105,8 +105,7 @@ func main() {
 		log.Fatal("Failed to register a consumer", err)
 	}
 
-	var forever chan struct{}
-
+	forever := make(chan bool)
 	go func() {
 
 		createFile()
@@ -114,6 +113,7 @@ func main() {
 		// Monto acumulado
 		amount := 0
 
+		// Loop to receive messages
 		for d := range msgs {
 			log.Printf("Received a message: %s", d.Body)
 			//body := "Mercenario1,Piso_1"
@@ -132,6 +132,9 @@ func main() {
 
 			// Print the message
 			log.Printf(" [x] Received %s\n", body)
+
+			// Print the file
+			log.Printf(" [x] File content:\n%s", readFromFile())
 		}
 	}()
 
