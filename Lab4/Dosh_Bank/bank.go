@@ -17,7 +17,6 @@ func createFile() {
 	defer file.Close()
 }
 
-// "Mercenario_1,Piso_1"
 func writeToFile(mercenary string, floor string, amount string) {
 	file, err := os.OpenFile("dosh_bank.txt", os.O_APPEND|os.O_WRONLY, os.ModeAppend)
 	if err != nil {
@@ -88,7 +87,7 @@ func main() {
 	)
 	failOnError(err, "Failed to register a consumer")
 
-	var forever chan struct{}
+	var forever chan bool
 
 	go func() {
 		createFile()

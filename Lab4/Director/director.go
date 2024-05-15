@@ -49,10 +49,8 @@ func main() {
 			Body:        []byte(body),
 		})
 
-	log.Print("eroor: ", err)
 	failOnError(err, "Failed to publish a message")
 
-	//<nil>
 	if err == nil {
 		log.Printf(" [x] Sent %s", body)
 	}
