@@ -127,8 +127,8 @@ func main() {
 			// Write the components to the file
 			writeToFile(mercenary, floor, fmt.Sprintf("%d", amount))
 
-			// Print the file content
-			log.Printf("File content: %s", readFromFile())
+			// Print the message
+			log.Printf(" [x] Received %s\n", body)
 		}
 	}()
 
