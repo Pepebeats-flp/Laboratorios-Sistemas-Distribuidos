@@ -1,4 +1,4 @@
-package main
+package Dosh_Bank
 
 import (
 	"context"
@@ -11,8 +11,6 @@ import (
 
 	amqp "github.com/rabbitmq/amqp091-go"
 	"google.golang.org/grpc"
-
-	pb "home/dist/Laboratorios-Sistemas-Distribuidos/Lab4"
 )
 
 // Create a file to store the messages
@@ -84,7 +82,7 @@ func (s *DoshBankServer) GetTotalAmount(ctx context.Context, request *pb.TotalAm
 		log.Fatalf("Cannot convert amount to integer", err)
 	}
 	// Devolver el monto acumulado
-	return &pb.TotalAmountResponse{Amount: totalAmount}, nil
+	return &pb.TotalAmountResponse{Amount: int32(totalAmount)}, nil
 }
 
 func main() {

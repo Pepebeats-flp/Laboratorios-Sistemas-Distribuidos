@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package service;
 
-option go_package = "github.com/Pepebeats-flp/Laboratorios-Sistemas-Distribuidos/tree/master/Lab4/Dosh_Bank/proto";
+option go_package = "github.com/Pepebeats-flp/Laboratorios-Sistemas-Distribuidos/tree/master/Lab4/Dosh_Bank";
 
 message GetTotalRequest {
     // Define cualquier campo necesario para la solicitud
