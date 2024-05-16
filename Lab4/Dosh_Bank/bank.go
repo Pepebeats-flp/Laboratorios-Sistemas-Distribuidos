@@ -1,7 +1,7 @@
 package main
 
 import (
-	pb "/usr/local/go/src/Lab4/Dosh_Bank"
+	pb "/home/dist/Laboratorios-Sistemas-Distribuidos/Lab4/Dosh_Bank"
 	"context"
 	"fmt"
 	"log"
