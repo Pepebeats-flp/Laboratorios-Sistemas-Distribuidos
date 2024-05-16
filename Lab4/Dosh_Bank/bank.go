@@ -11,6 +11,8 @@ import (
 
 	amqp "github.com/rabbitmq/amqp091-go"
 	"google.golang.org/grpc"
+
+	pb "/home/dist/Laboratorios-Sistemas-Distribuidos/Lab4/Dosh_Bank/proto"
 )
 
 // Create a file to store the messages
