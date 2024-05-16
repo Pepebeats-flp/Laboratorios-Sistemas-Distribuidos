@@ -1,12 +1,17 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
+	"net"
 	"os"
+	pb "ruta/al/proto/doshbank"
+	"strconv"
 	"strings"
 
 	amqp "github.com/rabbitmq/amqp091-go"
+	"google.golang.org/grpc"
 )
 
 // Create a file to store the messages
@@ -61,7 +66,38 @@ func failOnError(err error, msg string) {
 	}
 }
 
+// DoshBankServer implementa el servidor gRPC para manejar solicitudes del monto acumulado
+type DoshBankServer struct{}
+
+// GetTotalAmount devuelve el monto acumulado actual
+func (s *DoshBankServer) GetTotalAmount(ctx context.Context, request *pb.TotalAmountRequest) (*pb.TotalAmountResponse, error) {
+	// Aquí puedes implementar la lógica para obtener el monto acumulado del archivo o de cualquier otra fuente
+
+	// Leer el archivo y obtener el ultimo monto
+	fileContent := readFromFile()
+	lines := strings.Split(fileContent, "\n")
+	lastLine := lines[len(lines)-2]
+	components := strings.Split(lastLine, " ")
+	totalAmount, err := strconv.Atoi(components[2])
+	if err != nil {
+		log.Fatalf("Cannot convert amount to integer", err)
+	}
+	// Devolver el monto acumulado
+	return &pb.TotalAmountResponse{Amount: totalAmount}, nil
+}
+
 func main() {
+
+	// Iniciar el servidor gRPC
+	listener, err := net.Listen("tcp", ":50051")
+	if err != nil {
+		log.Fatalf("Failed to listen: %v", err)
+	}
+	grpcServer := grpc.NewServer()
+	pb.RegisterDoshBankServer(grpcServer, &DoshBankServer{})
+	log.Println("gRPC server started on port 50051")
+	grpcServer.Serve(listener)
+
 	// Connect to RabbitMQ
 	conn, err := amqp.Dial("amqp://dist:dist@dist041.inf.santiago.usm.cl:5672/")
 	failOnError(err, "Failed to connect to RabbitMQ")
