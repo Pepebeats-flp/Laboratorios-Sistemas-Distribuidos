@@ -1,7 +1,6 @@
 package main
 
 import (
-	pb "/home/dist/Laboratorios-Sistemas-Distribuidos/Lab4/Dosh_Bank"
 	"context"
 	"fmt"
 	"log"
@@ -9,6 +8,8 @@ import (
 	"os"
 	"strconv"
 	"strings"
+
+	pb "github.com/Pepebeats-flp/Laboratorios-Sistemas-Distribuidos/tree/master/Lab4/Dosh_Bank"
 
 	amqp "github.com/rabbitmq/amqp091-go"
 	"google.golang.org/grpc"
