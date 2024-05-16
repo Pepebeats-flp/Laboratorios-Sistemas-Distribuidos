@@ -12,7 +12,7 @@ import (
 	amqp "github.com/rabbitmq/amqp091-go"
 	"google.golang.org/grpc"
 
-	pb "prueba1"
+	pb "home/dist/Laboratorios-Sistemas-Distribuidos/Lab4"
 )
 
 // Create a file to store the messages
