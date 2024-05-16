@@ -1,12 +1,12 @@
 package main
 
 import (
+	pb "Lab4/Dosh_Bank"
 	"context"
 	"fmt"
 	"log"
 	"net"
 	"os"
-	pb "ruta/al/proto/doshbank"
 	"strconv"
 	"strings"
 
