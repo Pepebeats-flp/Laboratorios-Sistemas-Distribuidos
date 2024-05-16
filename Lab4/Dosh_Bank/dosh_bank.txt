@@ -1,0 +1,3 @@
+- Mercenario1 Piso_1 100000000
+- Mercenario2 Piso_2 200000000
+- Mercenario3 Piso_3 300000000
