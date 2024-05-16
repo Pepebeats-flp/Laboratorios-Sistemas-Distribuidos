@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package doshbank;
 
+option go_package = "github.com/Pepebeats-flp/Laboratorios-Sistemas-Distribuidos/tree/master/Lab4/Dosh_Bank";
+
 // Definición del servicio para el Dosh Bank
 service DoshBank {
   // Método para obtener el monto acumulado
