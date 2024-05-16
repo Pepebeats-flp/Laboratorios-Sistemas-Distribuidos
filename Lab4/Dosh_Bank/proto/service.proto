@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package service;
+
+message GetTotalRequest {
+    // Define cualquier campo necesario para la solicitud
+}
+
+message GetTotalResponse {
+    int32 total = 1;
+}
+
+service Bank {
+    rpc GetTotal(GetTotalRequest) returns (GetTotalResponse);
+}
+

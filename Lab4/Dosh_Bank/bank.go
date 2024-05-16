@@ -9,8 +9,6 @@ import (
 	"strconv"
 	"strings"
 
-	pb "github.com/Pepebeats-flp/Laboratorios-Sistemas-Distribuidos/tree/master/Lab4/Dosh_Bank"
-
 	amqp "github.com/rabbitmq/amqp091-go"
 	"google.golang.org/grpc"
 )
