@@ -9,6 +9,7 @@ import (
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
+// Create a file to store the messages
 func createFile() {
 	file, err := os.Create("dosh_bank.txt")
 	if err != nil {
@@ -17,6 +18,7 @@ func createFile() {
 	defer file.Close()
 }
 
+// Write the components to the file
 func writeToFile(mercenary string, floor string, amount string) {
 	file, err := os.OpenFile("dosh_bank.txt", os.O_APPEND|os.O_WRONLY, os.ModeAppend)
 	if err != nil {
@@ -30,6 +32,7 @@ func writeToFile(mercenary string, floor string, amount string) {
 	}
 }
 
+// Read the file
 func readFromFile() string {
 	file, err := os.Open("dosh_bank.txt")
 	if err != nil {
@@ -51,6 +54,7 @@ func readFromFile() string {
 	return string(data)
 }
 
+// Fail on error
 func failOnError(err error, msg string) {
 	if err != nil {
 		log.Fatalf("%s: %s", msg, err)
@@ -58,24 +62,29 @@ func failOnError(err error, msg string) {
 }
 
 func main() {
+	// Connect to RabbitMQ
 	conn, err := amqp.Dial("amqp://dist:dist@dist041.inf.santiago.usm.cl:5672/")
 	failOnError(err, "Failed to connect to RabbitMQ")
+	// Close the connection at the end
 	defer conn.Close()
-
+	// Open a channel
 	ch, err := conn.Channel()
 	failOnError(err, "Failed to open a channel")
+	// Close the channel at the end
 	defer ch.Close()
 
+	// Declare a queue
 	q, err := ch.QueueDeclare(
-		"dosh_bank2", // name
-		false,        // durable
-		false,        // delete when unused
-		false,        // exclusive
-		false,        // no-wait
-		nil,          // arguments
+		"eliminated_mercenaries", // name
+		false,                    // durable
+		false,                    // delete when unused
+		false,                    // exclusive
+		false,                    // no-wait
+		nil,                      // arguments
 	)
 	failOnError(err, "Failed to declare a queue")
 
+	// Consume messages
 	msgs, err := ch.Consume(
 		q.Name, // queue
 		"",     // consumer
