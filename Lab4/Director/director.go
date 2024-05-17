@@ -3,8 +3,23 @@ package main
 import (
 	"log"
 
+	pb "prueba1/proto"
+
 	amqp "github.com/rabbitmq/amqp091-go"
+
+	"context"
+	"fmt"
+	"math/rand"
+	"strconv"
+	"time"
+
+	"google.golang.org/grpc"
 )
+
+func generateID() string {
+	rand.Seed(time.Now().Unix())
+	return "ID: " + strconv.Itoa(rand.Int())
+}
 
 var conn *amqp.Connection
 var ch *amqp.Channel
@@ -54,6 +69,27 @@ func sendDeathMessage(mercenary string, floor string) {
 }
 
 func main() {
+
+	conn, err := grpc.Dial("dist041.inf.santiago.usm.cl:50051", grpc.WithInsecure())
+
+	if err != nil {
+		panic("cannot connect with server " + err.Error())
+	}
+
+	serviceClient := pb.NewWishListServiceClient(conn)
+
+	res, err := serviceClient.Create(context.Background(), &pb.CreateWishListReq{
+		WishList: &pb.WishList{
+			Id:   generateID(),
+			Name: "my wishlist",
+		},
+	})
+
+	if err != nil {
+		panic("wishlist is not created  " + err.Error())
+	}
+
+	fmt.Println(res.WishListId)
 
 	initializeRabbitMQConnection()
 
