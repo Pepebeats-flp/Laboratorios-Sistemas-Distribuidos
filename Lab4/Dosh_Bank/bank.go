@@ -100,6 +100,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to listen: %v", err)
 	}
+	log.Printf("Server started at port :50051")
 	serv := grpc.NewServer()
 	pb.RegisterWishListServiceServer(serv, &server{})
 	if err := serv.Serve(lis); err != nil {
