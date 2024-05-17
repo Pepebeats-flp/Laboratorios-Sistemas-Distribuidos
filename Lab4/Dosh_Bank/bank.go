@@ -72,23 +72,6 @@ func failOnError(err error, msg string) {
 }
 
 func main() {
-	// Iniciar el servidor gRPC
-	lis, err := net.Listen("tcp", ":50051")
-	if err != nil {
-		log.Fatalf("Failed to listen: %v", err)
-	}
-
-	s := &server{total: 0} // Inicializar el servidor con un total de 0
-	grpcServer := grpc.NewServer()
-	pb.RegisterBankServiceServer(grpcServer, s)
-
-	go func() {
-		log.Printf("gRPC server listening on port 50051")
-		if err := grpcServer.Serve(lis); err != nil {
-			log.Fatalf("Failed to serve: %v", err)
-		}
-	}()
-
 	// Conectar a RabbitMQ
 	conn, err := amqp.Dial("amqp://dist:dist@dist043.inf.santiago.usm.cl:5672/")
 	failOnError(err, "Failed to connect to RabbitMQ")
@@ -121,8 +104,24 @@ func main() {
 
 	createFile()
 
+	// Iniciar el servidor gRPC
+	lis, err := net.Listen("tcp", ":50051")
+	if err != nil {
+		log.Fatalf("Failed to listen: %v", err)
+	}
+
+	s := &server{total: 0} // Inicializar el servidor con un total de 0
+	grpcServer := grpc.NewServer()
+	pb.RegisterBankServiceServer(grpcServer, s)
+
 	// Escuchar mensajes de RabbitMQ
 	for d := range msgs {
+		go func() {
+			log.Printf("gRPC server listening on port 50051")
+			if err := grpcServer.Serve(lis); err != nil {
+				log.Fatalf("Failed to serve: %v", err)
+			}
+		}()
 		log.Printf("Received a message: %s", d.Body)
 		body := string(d.Body)
 
@@ -137,6 +136,5 @@ func main() {
 
 		writeToFile(mercenary, floor, fmt.Sprintf("%d", s.total))
 	}
-
 	log.Printf(" [x] File content: %s", readFromFile())
 }
