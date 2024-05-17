@@ -1,13 +1,37 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
+	"net"
 	"os"
 	"strings"
 
+	pb "prueba1/proto"
+
 	amqp "github.com/rabbitmq/amqp091-go"
+	"google.golang.org/grpc"
 )
+
+type server struct {
+	pb.UnimplementedWishListServiceServer
+}
+
+func (s *server) Create(ctx context.Context, req *pb.CreateWishListReq) (*pb.CreateWishListResp, error) {
+	fmt.Println("creating the wish list " + req.WishList.Name)
+	return &pb.CreateWishListResp{
+		WishListId: req.WishList.Id,
+	}, nil
+}
+
+func (s *server) Add(context.Context, *pb.AddItemReq) (*pb.AddItemResp, error) {
+	return nil, nil
+}
+
+func (s *server) List(context.Context, *pb.ListWishListReq) (*pb.ListWishListResp, error) {
+	return nil, nil
+}
 
 // Create a file to store the messages
 func createFile() {
@@ -62,6 +86,18 @@ func failOnError(err error, msg string) {
 }
 
 func main() {
+
+	// Start the server
+	lis, err := net.Listen("tcp", ":50051")
+	if err != nil {
+		log.Fatalf("Failed to listen: %v", err)
+	}
+	serv := grpc.NewServer()
+	pb.RegisterWishListServiceServer(serv, &server{})
+	if err := serv.Serve(lis); err != nil {
+		log.Fatalf("Failed to serve: %v", err)
+	}
+
 	// Connect to RabbitMQ
 	conn, err := amqp.Dial("amqp://dist:dist@dist041.inf.santiago.usm.cl:5672/")
 	failOnError(err, "Failed to connect to RabbitMQ")
