@@ -98,6 +98,8 @@ func main() {
 		log.Fatalf("Failed to serve: %v", err)
 	}
 
+	log.Printf(" [x] Awaiting RPC requests")
+
 	// Connect to RabbitMQ
 	conn, err := amqp.Dial("amqp://dist:dist@dist041.inf.santiago.usm.cl:5672/")
 	failOnError(err, "Failed to connect to RabbitMQ")
