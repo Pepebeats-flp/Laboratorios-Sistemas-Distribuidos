@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"time"
 
-	pb "github.com/Pepebeats-flp/Laboratorios-Sistemas-Distribuidos/proto"
+	pb "github.com/Pepebeats-flp/Laboratorios-Sistemas-Distribuidos/Lab4/proto"
 	amqp "github.com/rabbitmq/amqp091-go"
 	"google.golang.org/grpc"
 )

@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package bank;
 
-option go_package = "github.com/Pepebeats-flp/Laboratorios-Sistemas-Distribuidos/proto";
+option go_package = "github.com/Pepebeats-flp/Laboratorios-Sistemas-Distribuidos/Lab4/proto";
 
 message GetTotalRequest {}
 
