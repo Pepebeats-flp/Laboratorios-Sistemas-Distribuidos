@@ -1,18 +1,16 @@
+// director_client.go
 package main
 
 import (
-	"log"
-
-	pb "prueba1/proto"
-
-	amqp "github.com/rabbitmq/amqp091-go"
-
 	"context"
 	"fmt"
+	"log"
 	"math/rand"
 	"strconv"
 	"time"
 
+	pb "github.com/Pepebeats-flp/Laboratorios-Sistemas-Distribuidos/proto"
+	amqp "github.com/rabbitmq/amqp091-go"
 	"google.golang.org/grpc"
 )
 
@@ -69,28 +67,27 @@ func sendDeathMessage(mercenary string, floor string) {
 }
 
 func main() {
-
+	// Conectar al servidor gRPC del banco
 	conn, err := grpc.Dial("dist043.inf.santiago.usm.cl:50051", grpc.WithInsecure())
-
 	if err != nil {
-		panic("cannot connect with server " + err.Error())
+		log.Fatalf("Failed to connect to gRPC server: %v", err)
+	}
+	defer conn.Close()
+
+	bankClient := pb.NewBankServiceClient(conn)
+
+	// Solicitar el monto acumulado al banco
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	res, err := bankClient.GetTotal(ctx, &pb.GetTotalRequest{})
+	if err != nil {
+		log.Fatalf("Failed to get total: %v", err)
 	}
 
-	serviceClient := pb.NewWishListServiceClient(conn)
+	fmt.Printf("Total amount in bank: %d\n", res.Total)
 
-	res, err := serviceClient.Create(context.Background(), &pb.CreateWishListReq{
-		WishList: &pb.WishList{
-			Id:   generateID(),
-			Name: "my wishlist",
-		},
-	})
-
-	if err != nil {
-		panic("wishlist is not created  " + err.Error())
-	}
-
-	fmt.Println(res.WishListId)
-
+	// Inicializar conexión a RabbitMQ
 	initializeRabbitMQConnection()
 
 	sendDeathMessage("Mercenario1", "Piso_1")

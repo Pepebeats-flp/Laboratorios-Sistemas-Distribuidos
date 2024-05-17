@@ -11,14 +11,14 @@ import (
 	"strings"
 	"time"
 
-	pb "prueba1/proto"
-
+	pb "github.com/Pepebeats-flp/Laboratorios-Sistemas-Distribuidos/proto"
 	amqp "github.com/rabbitmq/amqp091-go"
 	"google.golang.org/grpc"
 )
 
 type server struct {
-	pb.UnimplementedWishListServiceServer
+	pb.UnimplementedBankServiceServer
+	total int32
 }
 
 func generateID() string {
@@ -26,23 +26,10 @@ func generateID() string {
 	return "ID: " + strconv.Itoa(rand.Int())
 }
 
-func (s *server) Create(ctx context.Context, req *pb.CreateWishListReq) (*pb.CreateWishListResp, error) {
-	fmt.Println("creating the wish list " + req.WishList.Name)
-	return &pb.CreateWishListResp{
-		WishListId: req.WishList.Id,
-	}, nil
+func (s *server) GetTotal(ctx context.Context, req *pb.GetTotalRequest) (*pb.GetTotalResponse, error) {
+	return &pb.GetTotalResponse{Total: s.total}, nil
 }
 
-func (s *server) Add(context.Context, *pb.AddItemReq) (*pb.AddItemResp, error) {
-
-	return nil, nil
-}
-
-func (s *server) List(context.Context, *pb.ListWishListReq) (*pb.ListWishListResp, error) {
-	return nil, nil
-}
-
-// Create a file to store the messages
 func createFile() {
 	file, err := os.Create("dosh_bank.txt")
 	if err != nil {
@@ -51,7 +38,6 @@ func createFile() {
 	defer file.Close()
 }
 
-// Write the components to the file
 func writeToFile(mercenary string, floor string, amount string) {
 	file, err := os.OpenFile("dosh_bank.txt", os.O_APPEND|os.O_WRONLY, os.ModeAppend)
 	if err != nil {
@@ -65,7 +51,6 @@ func writeToFile(mercenary string, floor string, amount string) {
 	}
 }
 
-// Read the file
 func readFromFile() string {
 	file, err := os.Open("dosh_bank.txt")
 	if err != nil {
@@ -87,7 +72,6 @@ func readFromFile() string {
 	return string(data)
 }
 
-// Fail on error
 func failOnError(err error, msg string) {
 	if err != nil {
 		log.Fatalf("%s: %s", msg, err)
@@ -95,31 +79,32 @@ func failOnError(err error, msg string) {
 }
 
 func main() {
-
-	// Start the server
+	// Iniciar el servidor gRPC
 	lis, err := net.Listen("tcp", ":50051")
 	if err != nil {
 		log.Fatalf("Failed to listen: %v", err)
 	}
-	serv := grpc.NewServer()
-	log.Printf("Server started at port :50051")
-	pb.RegisterWishListServiceServer(serv, &server{})
-	if err := serv.Serve(lis); err != nil {
-		log.Fatalf("Failed to serve: %v", err)
-	}
 
-	// Connect to RabbitMQ
+	s := &server{total: 0} // Inicializar el servidor con un total de 0
+	grpcServer := grpc.NewServer()
+	pb.RegisterBankServiceServer(grpcServer, s)
+
+	go func() {
+		log.Printf("gRPC server listening on port 50051")
+		if err := grpcServer.Serve(lis); err != nil {
+			log.Fatalf("Failed to serve: %v", err)
+		}
+	}()
+
+	// Conectar a RabbitMQ
 	conn, err := amqp.Dial("amqp://dist:dist@dist043.inf.santiago.usm.cl:5672/")
 	failOnError(err, "Failed to connect to RabbitMQ")
-	// Close the connection at the end
 	defer conn.Close()
-	// Open a channel
+
 	ch, err := conn.Channel()
 	failOnError(err, "Failed to open a channel")
-	// Close the channel at the end
 	defer ch.Close()
 
-	// Declare a queue
 	q, err := ch.QueueDeclare(
 		"eliminated_mercenaries", // name
 		false,                    // durable
@@ -130,7 +115,6 @@ func main() {
 	)
 	failOnError(err, "Failed to declare a queue")
 
-	// Consume messages
 	msgs, err := ch.Consume(
 		q.Name, // queue
 		"",     // consumer
@@ -142,37 +126,24 @@ func main() {
 	)
 	failOnError(err, "Failed to register a consumer")
 
-	// Create file at the beginning
 	createFile()
 
-	// initial amount
-	amount := 0
-
-	// Print initial amount
-	log.Printf(" [x] Amount: %d\n", amount)
-
-	// Loop to receive messages
+	// Escuchar mensajes de RabbitMQ
 	for d := range msgs {
 		log.Printf("Received a message: %s", d.Body)
 		body := string(d.Body)
 
-		// Split the message into its components
 		components := strings.Split(body, ",")
 		mercenary := components[0]
 		floor := components[1]
 
-		// Increment the amount
-		amount += 100000000
+		// Incrementar el total
+		s.total += 100000000
 
-		// Print the updated amount
-		log.Printf(" [x] Amount: %d\n", amount)
+		log.Printf(" [x] Amount: %d\n", s.total)
 
-		// Write the components to the file
-		writeToFile(mercenary, floor, fmt.Sprintf("%d", amount))
+		writeToFile(mercenary, floor, fmt.Sprintf("%d", s.total))
 	}
 
-	// Read the file
 	log.Printf(" [x] File content: %s", readFromFile())
-	// reinitialize the amount
-	amount = 0
 }

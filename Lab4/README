@@ -21,7 +21,7 @@ Se separó la ejecución de cada comando por máquina virtual.
     make director
     '''
 
-- Máquina Virtual NameNode (dist043)
+- Máquina Virtual NameNode y Bank xd (dist043)
     ssh dist@dist043.inf.santiago.usm.cl
     NBVXvgS9YezX
     '''
