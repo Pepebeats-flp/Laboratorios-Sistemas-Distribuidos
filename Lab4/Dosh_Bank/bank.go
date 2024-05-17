@@ -34,6 +34,7 @@ func (s *server) Create(ctx context.Context, req *pb.CreateWishListReq) (*pb.Cre
 }
 
 func (s *server) Add(context.Context, *pb.AddItemReq) (*pb.AddItemResp, error) {
+
 	return nil, nil
 }
 
