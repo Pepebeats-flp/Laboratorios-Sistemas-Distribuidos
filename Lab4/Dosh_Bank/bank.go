@@ -109,7 +109,7 @@ func main() {
 	}
 
 	// Connect to RabbitMQ
-	conn, err := amqp.Dial("amqp://dist:dist@dist041.inf.santiago.usm.cl:5672/")
+	conn, err := amqp.Dial("amqp://dist:dist@dist043.inf.santiago.usm.cl:5672/")
 	failOnError(err, "Failed to connect to RabbitMQ")
 	// Close the connection at the end
 	defer conn.Close()

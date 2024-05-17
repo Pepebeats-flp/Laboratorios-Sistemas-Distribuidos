@@ -32,7 +32,7 @@ func failOnError(err error, msg string) {
 
 func initializeRabbitMQConnection() {
 	var err error
-	conn, err = amqp.Dial("amqp://dist:dist@dist041.inf.santiago.usm.cl:5672/")
+	conn, err = amqp.Dial("amqp://dist:dist@dist043.inf.santiago.usm.cl:5672/")
 	failOnError(err, "Failed to connect to RabbitMQ")
 
 	ch, err = conn.Channel()
@@ -70,7 +70,7 @@ func sendDeathMessage(mercenary string, floor string) {
 
 func main() {
 
-	conn, err := grpc.Dial("dist041.inf.santiago.usm.cl:50051", grpc.WithInsecure())
+	conn, err := grpc.Dial("dist043.inf.santiago.usm.cl:50051", grpc.WithInsecure())
 
 	if err != nil {
 		panic("cannot connect with server " + err.Error())
