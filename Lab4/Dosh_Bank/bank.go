@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"math/rand"
 	"net"
 	"os"
 	"strconv"
@@ -13,7 +14,6 @@ import (
 	pb "prueba1/proto"
 
 	amqp "github.com/rabbitmq/amqp091-go"
-	"golang.org/x/exp/rand"
 	"google.golang.org/grpc"
 )
 
@@ -23,7 +23,7 @@ type server struct {
 
 func generateID() string {
 	rand.Seed(time.Now().Unix())
-	return "ID: " + strconv.Itoa(rand.Intn())
+	return "ID: " + strconv.Itoa(rand.Int())
 }
 
 func (s *server) Create(ctx context.Context, req *pb.CreateWishListReq) (*pb.CreateWishListResp, error) {
