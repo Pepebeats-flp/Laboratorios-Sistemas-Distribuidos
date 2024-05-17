@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package bank;
 
-option go_package = "github.com/Pepebeats-flp/Laboratorios-Sistemas-Distribuidos/Lab4/proto";
+option go_package = "prueba1/proto"
 
 message GetTotalRequest {}
 
@@ -13,4 +13,3 @@ message GetTotalResponse {
 service BankService {
     rpc GetTotal(GetTotalRequest) returns (GetTotalResponse);
 }
-
