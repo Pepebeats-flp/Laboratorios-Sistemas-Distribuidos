@@ -4,12 +4,9 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"math/rand"
 	"net"
 	"os"
-	"strconv"
 	"strings"
-	"time"
 
 	pb "prueba1/proto"
 
@@ -20,11 +17,6 @@ import (
 type server struct {
 	pb.UnimplementedBankServiceServer
 	total int32
-}
-
-func generateID() string {
-	rand.Seed(time.Now().Unix())
-	return "ID: " + strconv.Itoa(rand.Int())
 }
 
 func (s *server) GetTotal(ctx context.Context, req *pb.GetTotalRequest) (*pb.GetTotalResponse, error) {
