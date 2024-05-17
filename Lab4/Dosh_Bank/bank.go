@@ -6,16 +6,24 @@ import (
 	"log"
 	"net"
 	"os"
+	"strconv"
 	"strings"
+	"time"
 
 	pb "prueba1/proto"
 
 	amqp "github.com/rabbitmq/amqp091-go"
+	"golang.org/x/exp/rand"
 	"google.golang.org/grpc"
 )
 
 type server struct {
 	pb.UnimplementedWishListServiceServer
+}
+
+func generateID() string {
+	rand.Seed(time.Now().Unix())
+	return "ID: " + strconv.Itoa(rand.Intn())
 }
 
 func (s *server) Create(ctx context.Context, req *pb.CreateWishListReq) (*pb.CreateWishListResp, error) {
@@ -97,8 +105,6 @@ func main() {
 	if err := serv.Serve(lis); err != nil {
 		log.Fatalf("Failed to serve: %v", err)
 	}
-
-	log.Printf(" [x] Awaiting RPC requests")
 
 	// Connect to RabbitMQ
 	conn, err := amqp.Dial("amqp://dist:dist@dist041.inf.santiago.usm.cl:5672/")
