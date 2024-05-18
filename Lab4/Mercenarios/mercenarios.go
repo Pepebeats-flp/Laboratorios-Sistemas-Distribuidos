@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 	"time"
 
@@ -27,17 +28,40 @@ func NewMercenario(id, name string) *Mercenario {
 
 // InformarEstadoPreparacion envía una solicitud al Director para informar el estado de preparación
 func (m *Mercenario) InformarEstadoPreparacion(client pb.DirectorServiceClient) {
-	log.Printf("Mercenario %s está listo", m.Name)
+	req := &pb.PreparacionRequest{
+		MercenarioId: m.ID,
+		Nombre:       m.Name,
+	}
+	resp, err := client.Preparacion(context.Background(), req)
+	if err != nil {
+		log.Fatalf("Error al informar preparación: %v", err)
+	}
+	log.Printf("Respuesta del Director: %s", resp.Mensaje)
 }
 
 // TomarDecision toma una decisión en base a la situación del piso actual
 func (m *Mercenario) TomarDecision(client pb.DirectorServiceClient) {
-	log.Printf("Mercenario %s toma una decisión", m.Name)
+	req := &pb.DecisionRequest{
+		MercenarioId: m.Name,   // Cambiado para pasar el nombre del mercenario
+		Piso:         "Piso_1", // Ejemplo de piso
+	}
+	resp, err := client.Decision(context.Background(), req)
+	if err != nil {
+		log.Fatalf("Error al tomar decisión: %v", err)
+	}
+	log.Printf("Respuesta del Director: %s", resp.Mensaje)
 }
 
 // VerMontoDoshBank solicita al Director el monto acumulado en el Dosh Bank
 func VerMontoDoshBank(client pb.DirectorServiceClient) {
-	log.Println("Los mercenarios piden el monto acumulado en el Dosh Bank")
+	req := &pb.MontoRequest{
+		Solicitud: "VerMonto",
+	}
+	resp, err := client.ObtenerMonto(context.Background(), req)
+	if err != nil {
+		log.Fatalf("Error al ver monto: %v", err)
+	}
+	log.Printf("Monto acumulado en Dosh Bank: %d", resp.Total)
 }
 
 // Función de inicialización para establecer una conexión gRPC con el Director
