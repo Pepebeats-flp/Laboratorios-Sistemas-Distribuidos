@@ -31,6 +31,7 @@ func initializeRabbitMQConnection() {
 }
 
 func sendDeathMessage(mercenary string, floor string) {
+	// Declare a queue if not already declared
 	q, err := ch.QueueDeclare(
 		"eliminated_mercenaries", // name
 		false,                    // durable
@@ -43,6 +44,7 @@ func sendDeathMessage(mercenary string, floor string) {
 
 	body := mercenary + "," + floor
 
+	// Publish a message
 	err = ch.Publish(
 		"",     // exchange
 		q.Name, // routing key
@@ -83,15 +85,6 @@ func (s *DirectorServer) Decision(ctx context.Context, req *pb.DecisionRequest) 
 
 // Implementación del servicio ObtenerMonto
 func (s *DirectorServer) ObtenerMonto(ctx context.Context, req *pb.MontoRequest) (*pb.MontoResponse, error) {
-	log.Printf("Solicitud de monto recibida: %s", req.Solicitud)
-	total := getTotalAmount()
-	fmt.Printf("Monto acumulado en Dosh Bank: %d\n", total)
-	return &pb.MontoResponse{Total: total}, nil
-}
-
-func main() {
-	initializeRabbitMQConnection()
-
 	// Conectar al servidor gRPC del banco
 	conn, err := grpc.Dial("dist097.inf.santiago.usm.cl:50051", grpc.WithInsecure())
 	if err != nil {
@@ -100,7 +93,14 @@ func main() {
 	defer conn.Close()
 
 	serviceClient = pb.NewBankServiceClient(conn)
+	log.Printf("Solicitud de monto recibida: %s", req.Solicitud)
+	// Aquí debes implementar la lógica para obtener el monto del Dosh Bank
+	total := getTotalAmount()
+	fmt.Printf("Monto acumulado en Dosh Bank: %d\n", total)
+	return &pb.MontoResponse{Total: total}, nil
+}
 
+func main() {
 	// Iniciar el servidor gRPC para el Director-mercenarios
 	lis, err := net.Listen("tcp", ":50052")
 	if err != nil {
@@ -110,16 +110,10 @@ func main() {
 	pb.RegisterDirectorServiceServer(s, &DirectorServer{})
 	log.Printf("Director server started at port :50052")
 
-	go func() {
-		if err := s.Serve(lis); err != nil {
-			log.Fatalf("Failed to serve: %v", err)
-		}
-	}()
+	initializeRabbitMQConnection()
 
-	sendDeathMessage("Mercenario1", "Piso_1")
-	sendDeathMessage("Mercenario2", "Piso_2")
-	sendDeathMessage("Mercenario3", "Piso_3")
-
-	// Esperar para evitar que el programa termine inmediatamente
-	select {}
+	// Mantener el servidor gRPC en ejecución
+	if err := s.Serve(lis); err != nil {
+		log.Fatalf("Failed to serve: %v", err)
+	}
 }
