@@ -67,40 +67,39 @@ func getTotalAmount() int32 {
 	return res.Total
 }
 
-type DirectorServer struct {
-	pb.UnimplementedDirectorServiceServer
+type DirectorServer struct{}
+
+// Implementación del servicio Preparacion
+func (s *DirectorServer) Preparacion(ctx context.Context, req *pb.PreparacionRequest) (*pb.PreparacionResponse, error) {
+	log.Printf("Solicitud de preparación recibida para el mercenario ID: %s, Nombre: %s", req.MercenarioId, req.Nombre)
+	return &pb.PreparacionResponse{Mensaje: "Preparación recibida correctamente"}, nil
 }
 
-// InformarPreparacion implementa el método del servicio Director para recibir información de preparación de los mercenarios
-func (s *DirectorServer) InformarPreparacion(ctx context.Context, req *pb.PreparacionRequest) (*pb.PreparacionResponse, error) {
-	log.Printf("Se recibió un mensaje de preparación del mercenario %s\n", req.MercenarioId)
-	return &pb.PreparacionResponse{}, nil
+// Implementación del servicio Decision
+func (s *DirectorServer) Decision(ctx context.Context, req *pb.DecisionRequest) (*pb.DecisionResponse, error) {
+	log.Printf("Solicitud de decisión recibida para el mercenario ID: %s, Piso: %s", req.MercenarioId, req.Piso)
+	return &pb.DecisionResponse{Mensaje: "Decisión recibida correctamente"}, nil
 }
 
-// TomarDecision implementa el método del servicio Director para recibir las decisiones de los mercenarios
-func (s *DirectorServer) TomarDecision(ctx context.Context, req *pb.DecisionRequest) (*pb.DecisionResponse, error) {
-	log.Printf("Se recibió una decisión del mercenario %s: %s\n", req.MercenarioId, req.Decision)
-	return &pb.DecisionResponse{}, nil
-}
-
-// SolicitarMonto implementa el método del servicio Director para recibir solicitudes de ver el monto del Dosh Bank
-func (s *DirectorServer) SolicitarMonto(ctx context.Context, req *pb.MontoRequest) (*pb.MontoResponse, error) {
-	log.Printf("Se recibió una solicitud de ver el monto del Dosh Bank del mercenario %s\n", req.MercenarioId)
-	// Aquí puedes realizar la lógica para obtener el monto del Dosh Bank y enviarlo como respuesta
-	return &pb.MontoResponse{Monto: 1000}, nil // Ejemplo: devolver un monto de 1000
+// Implementación del servicio ObtenerMonto
+func (s *DirectorServer) ObtenerMonto(ctx context.Context, req *pb.MontoRequest) (*pb.MontoResponse, error) {
+	log.Printf("Solicitud de monto recibida: %s", req.Solicitud)
+	// Aquí debes implementar la lógica para obtener el monto del Dosh Bank
+	total := int32(1000) // Ejemplo: monto ficticio para probar
+	return &pb.MontoResponse{Total: total}, nil
 }
 
 func main() {
-	// Iniciar el servidor gRPC del Director
+	// Iniciar el servidor gRPC para el Director-mercenarios
 	lis, err := net.Listen("tcp", ":50052")
 	if err != nil {
-		log.Fatalf("Error al escuchar: %v", err)
+		log.Fatalf("Failed to listen: %v", err)
 	}
 	s := grpc.NewServer()
 	pb.RegisterDirectorServiceServer(s, &DirectorServer{})
-	log.Printf("Servidor del Director iniciado en el puerto :50052")
+	log.Printf("Director server started at port :50052")
 	if err := s.Serve(lis); err != nil {
-		log.Fatalf("Error al servir: %v", err)
+		log.Fatalf("Failed to serve: %v", err)
 	}
 
 	initializeRabbitMQConnection()
