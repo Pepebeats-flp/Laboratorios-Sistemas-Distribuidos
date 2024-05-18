@@ -68,6 +68,13 @@ func getTotalAmount() int32 {
 }
 
 func main() {
+
+	initializeRabbitMQConnection()
+
+	sendDeathMessage("Mercenario1", "Piso_1")
+	sendDeathMessage("Mercenario2", "Piso_2")
+	sendDeathMessage("Mercenario3", "Piso_3")
+
 	// Conectar al servidor gRPC del banco
 	conn, err := grpc.Dial("dist043.inf.santiago.usm.cl:50051", grpc.WithInsecure())
 	if err != nil {
@@ -80,12 +87,6 @@ func main() {
 	// Realizar consulta inicial del monto acumulado
 	totalAmount := getTotalAmount()
 	fmt.Printf("Monto acumulado en Dosh Bank: %d\n", totalAmount)
-
-	initializeRabbitMQConnection()
-
-	sendDeathMessage("Mercenario1", "Piso_1")
-	sendDeathMessage("Mercenario2", "Piso_2")
-	sendDeathMessage("Mercenario3", "Piso_3")
 
 	// Llamar a getTotalAmount en cualquier momento
 	totalAmount = getTotalAmount()
