@@ -12,7 +12,7 @@ Se separó la ejecución de cada comando por máquina virtual.
     make bank
     '''
 
-- Máquina Virtual Director (dist042)
+- Máquina Virtual Director y Mercenarios (dist042)
     ssh dist@dist042.inf.santiago.usm.cl
     z2dghbNT3Pbw
     '''
