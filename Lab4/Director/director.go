@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net"
 	pb "prueba1/proto"
@@ -56,7 +55,7 @@ func sendDeathMessage(mercenaryName string, floor string) {
 		})
 	failOnError(err, "Failed to publish a message")
 
-	log.Printf(" [x] Mercenary %s died on floor %s", mercenaryName, floor[5:])
+	log.Printf("Mercenario %s muerto en el piso %s", mercenaryName, floor[5:])
 }
 
 func getTotalAmount() int32 {
@@ -73,22 +72,21 @@ type DirectorServer struct {
 
 // Implementación del servicio Preparacion
 func (s *DirectorServer) Preparacion(ctx context.Context, req *pb.PreparacionRequest) (*pb.PreparacionResponse, error) {
-	log.Printf("Solicitud de preparación recibida para el mercenario ID: %s, Nombre: %s", req.MercenarioId, req.Nombre)
+	log.Printf("Mercenario %s está listo", req.Nombre)
 	return &pb.PreparacionResponse{Mensaje: "Preparación recibida correctamente"}, nil
 }
 
 // Implementación del servicio Decision
 func (s *DirectorServer) Decision(ctx context.Context, req *pb.DecisionRequest) (*pb.DecisionResponse, error) {
-	log.Printf("Solicitud de decisión recibida para el mercenario ID: %s, Piso: %s", req.MercenarioId, req.Piso)
-	sendDeathMessage(req.MercenarioId, req.Piso)
+	sendDeathMessage(req.Nombre, req.Piso)
 	return &pb.DecisionResponse{Mensaje: "Decisión recibida correctamente"}, nil
 }
 
 // Implementación del servicio ObtenerMonto
 func (s *DirectorServer) ObtenerMonto(ctx context.Context, req *pb.MontoRequest) (*pb.MontoResponse, error) {
-	log.Printf("Solicitud de monto recibida: %s", req.Solicitud)
+	log.Println("Solicitud de monto recibida")
 	total := getTotalAmount()
-	fmt.Printf("Monto acumulado en Dosh Bank: %d\n", total)
+	log.Printf("Monto acumulado en Dosh Bank: %d", total)
 	return &pb.MontoResponse{Total: total}, nil
 }
 
