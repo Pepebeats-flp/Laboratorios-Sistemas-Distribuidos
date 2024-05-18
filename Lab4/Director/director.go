@@ -144,6 +144,4 @@ func main() {
 	sendDeathMessage("Mercenario2", "Piso_2")
 	sendDeathMessage("Mercenario3", "Piso_3")
 
-	// Wait to avoid the program ending immediately
-	select {}
 }
