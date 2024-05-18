@@ -22,7 +22,6 @@ func NewMercenario(id, name string) *Mercenario {
 	return &Mercenario{
 		ID:   id,
 		Name: name,
-		Live: true,
 	}
 }
 
@@ -31,7 +30,6 @@ func (m *Mercenario) InformarEstadoPreparacion(client pb.DirectorServiceClient) 
 	req := &pb.PreparacionRequest{
 		MercenarioId: m.ID,
 		Nombre:       m.Name,
-		Preparado:    true,
 	}
 	resp, err := client.Preparacion(context.Background(), req)
 	if err != nil {
