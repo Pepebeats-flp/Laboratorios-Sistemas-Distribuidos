@@ -123,10 +123,6 @@ func main() {
 			// Initialize gRPC connection on first message
 			if !grpcInitialized {
 				initializeGrpcConnection()
-
-				// Perform initial gRPC request
-				totalAmount := getTotalAmount()
-				fmt.Printf("Monto acumulado en Dosh Bank: %d\n", totalAmount)
 			}
 
 			// Send death message
@@ -143,5 +139,9 @@ func main() {
 	sendDeathMessage("Mercenario1", "Piso_1")
 	sendDeathMessage("Mercenario2", "Piso_2")
 	sendDeathMessage("Mercenario3", "Piso_3")
+
+	// Perform initial gRPC request
+	totalAmount := getTotalAmount()
+	fmt.Printf("Monto acumulado en Dosh Bank: %d\n", totalAmount)
 
 }
