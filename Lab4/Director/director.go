@@ -67,7 +67,9 @@ func getTotalAmount() int32 {
 	return res.Total
 }
 
-type DirectorServer struct{}
+type DirectorServer struct {
+	pb.UnimplementedDirectorServiceServer // Esta línea agrega el método faltante a la estructura
+}
 
 // Implementación del servicio Preparacion
 func (s *DirectorServer) Preparacion(ctx context.Context, req *pb.PreparacionRequest) (*pb.PreparacionResponse, error) {
