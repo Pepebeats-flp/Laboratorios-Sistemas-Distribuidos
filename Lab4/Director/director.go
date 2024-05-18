@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"strings"
-	"sync"
 
 	pb "prueba1/proto"
 
@@ -16,8 +14,6 @@ import (
 var conn *amqp.Connection
 var ch *amqp.Channel
 var serviceClient pb.BankServiceClient
-var grpcInitialized bool
-var grpcMutex sync.Mutex
 
 func failOnError(err error, msg string) {
 	if err != nil {
@@ -64,14 +60,6 @@ func sendDeathMessage(mercenary string, floor string) {
 }
 
 func getTotalAmount() int32 {
-	grpcMutex.Lock()
-	defer grpcMutex.Unlock()
-
-	if !grpcInitialized {
-		log.Println("gRPC connection not initialized")
-		return 0
-	}
-
 	res, err := serviceClient.GetTotal(context.Background(), &pb.GetTotalRequest{})
 	if err != nil {
 		log.Fatalf("Failed to get total: %s", err)
@@ -79,69 +67,28 @@ func getTotalAmount() int32 {
 	return res.Total
 }
 
-func initializeGrpcConnection() {
+func main() {
+	// Conectar al servidor gRPC del banco
 	conn, err := grpc.Dial("dist043.inf.santiago.usm.cl:50051", grpc.WithInsecure())
 	if err != nil {
-		log.Fatalf("cannot connect with server: %s", err)
+		panic("cannot connect with server " + err.Error())
 	}
+	defer conn.Close()
 
 	serviceClient = pb.NewBankServiceClient(conn)
-	grpcInitialized = true
-	log.Println("gRPC connection initialized")
-}
 
-func main() {
+	// Realizar consulta inicial del monto acumulado
+	totalAmount := getTotalAmount()
+	fmt.Printf("Monto acumulado en Dosh Bank: %d\n", totalAmount)
+
 	initializeRabbitMQConnection()
 
-	// Declare a queue if not already declared
-	q, err := ch.QueueDeclare(
-		"eliminated_mercenaries", // name
-		false,                    // durable
-		false,                    // delete when unused
-		false,                    // exclusive
-		false,                    // no-wait
-		nil,                      // arguments
-	)
-	failOnError(err, "Failed to declare a queue")
-
-	// Consume messages
-	msgs, err := ch.Consume(
-		q.Name, // queue
-		"",     // consumer
-		true,   // auto-ack
-		false,  // exclusive
-		false,  // no-local
-		false,  // no-wait
-		nil,    // args
-	)
-	failOnError(err, "Failed to register a consumer")
-
-	go func() {
-		for d := range msgs {
-			log.Printf("Received a message: %s", d.Body)
-
-			// Initialize gRPC connection on first message
-			if !grpcInitialized {
-				initializeGrpcConnection()
-			}
-
-			// Send death message
-			body := string(d.Body)
-			components := strings.Split(body, ",")
-			mercenary := components[0]
-			floor := components[1]
-
-			sendDeathMessage(mercenary, floor)
-		}
-	}()
-
-	// Simulate sending messages
 	sendDeathMessage("Mercenario1", "Piso_1")
 	sendDeathMessage("Mercenario2", "Piso_2")
 	sendDeathMessage("Mercenario3", "Piso_3")
 
-	// Perform initial gRPC request
-	totalAmount := getTotalAmount()
-	fmt.Printf("Monto acumulado en Dosh Bank: %d\n", totalAmount)
+	// Llamar a getTotalAmount en cualquier momento
+	totalAmount = getTotalAmount()
+	fmt.Printf("Monto acumulado en Dosh Bank después de enviar mensajes: %d\n", totalAmount)
 
 }
