@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package bank;
+package main;
 
 option go_package = "prueba1/proto";
 
