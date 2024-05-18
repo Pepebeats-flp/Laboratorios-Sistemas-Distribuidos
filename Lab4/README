@@ -1,6 +1,5 @@
 ssh jose.pinto@capela.inf.santiago.usm.cl
 
-
 Se separó la ejecución de cada comando por máquina virtual.
 
 - Máquina Virtual Dosh Bank (dist097)
@@ -16,9 +15,15 @@ Se separó la ejecución de cada comando por máquina virtual.
     ssh dist@dist042.inf.santiago.usm.cl
     z2dghbNT3Pbw
     '''
+    En una terminal:
     sudo su
     cd Laboratorios-Sistemas-Distribuidos/Lab4
     make director
+
+    En otra terminal:
+    sudo su
+    cd Laboratorios-Sistemas-Distribuidos/Lab4
+    make mercenarios
     '''
 
 - Máquina Virtual NameNode(dist043)
@@ -27,7 +32,6 @@ Se separó la ejecución de cada comando por máquina virtual.
     '''
     sudo su
     cd Laboratorios-Sistemas-Distribuidos/Lab4
-    make bank
     '''
 
 ssh dist@dist044.inf.santiago.usm.cl

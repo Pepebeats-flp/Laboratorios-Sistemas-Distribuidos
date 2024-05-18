@@ -14,7 +14,7 @@ import (
 type Mercenario struct {
 	ID   string
 	Name string
-	// Otros campos necesarios
+	Live bool
 }
 
 // NewMercenario crea una nueva instancia de Mercenario
@@ -22,7 +22,7 @@ func NewMercenario(id, name string) *Mercenario {
 	return &Mercenario{
 		ID:   id,
 		Name: name,
-		// Inicializar otros campos si es necesario
+		Live: true,
 	}
 }
 
@@ -31,6 +31,7 @@ func (m *Mercenario) InformarEstadoPreparacion(client pb.DirectorServiceClient) 
 	req := &pb.PreparacionRequest{
 		MercenarioId: m.ID,
 		Nombre:       m.Name,
+		Preparado:    true,
 	}
 	resp, err := client.Preparacion(context.Background(), req)
 	if err != nil {
@@ -44,8 +45,9 @@ func (m *Mercenario) InformarEstadoPreparacion(client pb.DirectorServiceClient) 
 // TomarDecision toma una decisión en base a la situación del piso actual
 func (m *Mercenario) TomarDecision(client pb.DirectorServiceClient) {
 	req := &pb.DecisionRequest{
-		MercenarioId: m.Name,   // Cambiado para pasar el nombre del mercenario
-		Piso:         "Piso_1", // Ejemplo de piso
+		MercenarioId: m.Name,   // Nombre del mercenario
+		Piso:         "Piso_1", // Ejemplo de piso CAMBIAR
+
 	}
 	resp, err := client.Decision(context.Background(), req)
 	if err != nil {
@@ -77,6 +79,34 @@ func initializeDirectorConnection() pb.DirectorServiceClient {
 	}
 	client := pb.NewDirectorServiceClient(conn)
 	return client
+}
+
+// Enviar mensaje al Director para el Piso 1
+func EnviarMensajePiso1(client pb.DirectorServiceClient, mercenarios []*pb.Mercenario) {
+	req := &pb.Piso1Request{
+		Mercenarios: mercenarios,
+	}
+	// Enviar el mensaje al Director
+	// Manejar la respuesta si es necesario
+
+}
+
+// Enviar mensaje al Director para el Piso 2
+func EnviarMensajePiso2(client pb.DirectorServiceClient, decisiones []*pb.Decision) {
+	req := &pb.Piso2Request{
+		Decisiones: decisiones,
+	}
+	// Enviar el mensaje al Director
+	// Manejar la respuesta si es necesario
+}
+
+// Enviar mensaje al Director para el Piso 3
+func EnviarMensajePiso3(client pb.DirectorServiceClient, numeros []int32) {
+	req := &pb.Piso3Request{
+		Numeros: numeros,
+	}
+	// Enviar el mensaje al Director
+	// Manejar la respuesta si es necesario
 }
 
 func main() {

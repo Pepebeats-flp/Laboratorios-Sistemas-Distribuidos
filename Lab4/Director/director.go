@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"math/rand"
 	"net"
 	pb "prueba1/proto"
 
@@ -69,6 +70,79 @@ func getTotalAmount() int32 {
 
 type DirectorServer struct {
 	pb.UnimplementedDirectorServiceServer
+}
+
+// Piso1 maneja la lógica del piso 1
+func (s *DirectorServer) Piso1(ctx context.Context, req *pb.Piso1Request) (*pb.Piso1Response, error) {
+	log.Println("Iniciando Piso 1: Entrada al infierno")
+
+	// Manejar la lógica del piso 1 aquí
+	// Por ejemplo, calcular probabilidades de supervivencia para cada mercenario
+
+	// Simulación de cálculo de probabilidades
+	probabilidades := make(map[string]int32)
+	for _, mercenario := range req.Mercenarios {
+		probEscopeta := rand.Int31n(100)
+		probRifle := rand.Int31n(100 - probEscopeta)
+		probPunos := 100 - probEscopeta - probRifle
+		probabilidades[mercenario.Id] = probEscopeta
+		// Enviar mensaje al mercenario con la probabilidad de supervivencia
+	}
+
+	// Simulación de eliminación de mercenarios basada en probabilidades
+	// Eliminar mercenarios basados en las probabilidades calculadas
+	// Aquí puedes enviar mensajes de eliminación a los mercenarios que hayan fallado
+	// Simulación de eliminación de mercenarios
+
+	log.Println("Finalizando Piso 1")
+	return &pb.Piso1Response{}, nil
+}
+
+// Piso2 maneja la lógica del piso 2
+func (s *DirectorServer) Piso2(ctx context.Context, req *pb.Piso2Request) (*pb.Piso2Response, error) {
+	log.Println("Iniciando Piso 2: Trampas y Traiciones")
+
+	// Manejar la lógica del piso 2 aquí
+	// Por ejemplo, calcular la salida correcta al azar
+
+	// Simulación de cálculo de salida correcta al azar
+	salidaCorrecta := rand.Intn(2)
+	log.Printf("La salida correcta es el camino %c", 'A'+salidaCorrecta)
+
+	// Simulación de eliminación de mercenarios basada en salida correcta
+	// Aquí puedes enviar mensajes de eliminación a los mercenarios que hayan fallado
+
+	log.Println("Finalizando Piso 2")
+	return &pb.Piso2Response{}, nil
+}
+
+// Piso3 maneja la lógica del piso 3
+func (s *DirectorServer) Piso3(ctx context.Context, req *pb.Piso3Request) (*pb.Piso3Response, error) {
+	log.Println("Iniciando Piso 3: Confrontación Final")
+
+	// Simulación de generación de número aleatorio del Patriarca
+	patriarca := rand.Intn(15) + 1
+	log.Printf("Número del Patriarca: %d", patriarca)
+
+	// Simulación de rondas y aciertos
+	aciertos := 0
+	for i := 0; i < 5; i++ {
+		numeroMercenario := rand.Intn(15) + 1
+		log.Printf("Número elegido por el mercenario: %d", numeroMercenario)
+		if numeroMercenario == patriarca {
+			aciertos++
+		}
+	}
+
+	// Verificar el resultado final
+	if aciertos >= 2 {
+		log.Println("Los mercenarios han salido victoriosos del enfrentamiento con el Patriarca!")
+	} else {
+		log.Println("Los mercenarios han sido eliminados en el enfrentamiento con el Patriarca.")
+	}
+
+	log.Println("Finalizando Piso 3")
+	return &pb.Piso3Response{}, nil
 }
 
 // Implementación del servicio Preparacion

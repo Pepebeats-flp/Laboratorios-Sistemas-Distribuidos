@@ -53,3 +53,35 @@ service DirectorService {
     rpc ObtenerMonto(MontoRequest) returns (MontoResponse) {}
 }
 
+
+// Para los pisos xd
+message Piso1Request {
+    repeated Mercenario mercenarios = 1;
+}
+
+message Piso2Request {
+    repeated Decision decisiones = 1;
+}
+
+message Piso3Request {
+    repeated int32 numeros = 1;
+}
+
+// Define responses for each floor
+message Piso1Response {}
+message Piso2Response {}
+message Piso3Response {}
+
+// Mercenario message
+message Mercenario {
+    string id = 1;
+    string name = 2;
+    // Add other fields as needed
+}
+
+// Decision message
+message Decision {
+    string id = 1;
+    string decision = 2; // A o B
+    // Add other fields as needed
+}
