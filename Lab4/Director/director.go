@@ -85,22 +85,25 @@ func (s *DirectorServer) Decision(ctx context.Context, req *pb.DecisionRequest) 
 
 // Implementación del servicio ObtenerMonto
 func (s *DirectorServer) ObtenerMonto(ctx context.Context, req *pb.MontoRequest) (*pb.MontoResponse, error) {
-	// Conectar al servidor gRPC del banco
-	conn, err := grpc.Dial("dist097.inf.santiago.usm.cl:50051", grpc.WithInsecure())
-	if err != nil {
-		panic("cannot connect with server " + err.Error())
-	}
-	defer conn.Close()
-
-	serviceClient = pb.NewBankServiceClient(conn)
 	log.Printf("Solicitud de monto recibida: %s", req.Solicitud)
-	// Aquí debes implementar la lógica para obtener el monto del Dosh Bank
 	total := getTotalAmount()
 	fmt.Printf("Monto acumulado en Dosh Bank: %d\n", total)
 	return &pb.MontoResponse{Total: total}, nil
 }
 
 func main() {
+	// Inicializar conexión con RabbitMQ
+	initializeRabbitMQConnection()
+
+	// Conectar al servidor gRPC del banco
+	bankConn, err := grpc.Dial("dist097.inf.santiago.usm.cl:50051", grpc.WithInsecure())
+	if err != nil {
+		panic("cannot connect with bank server " + err.Error())
+	}
+	defer bankConn.Close()
+
+	serviceClient = pb.NewBankServiceClient(bankConn)
+
 	// Iniciar el servidor gRPC para el Director-mercenarios
 	lis, err := net.Listen("tcp", ":50052")
 	if err != nil {
@@ -109,8 +112,6 @@ func main() {
 	s := grpc.NewServer()
 	pb.RegisterDirectorServiceServer(s, &DirectorServer{})
 	log.Printf("Director server started at port :50052")
-
-	initializeRabbitMQConnection()
 
 	// Mantener el servidor gRPC en ejecución
 	if err := s.Serve(lis); err != nil {
