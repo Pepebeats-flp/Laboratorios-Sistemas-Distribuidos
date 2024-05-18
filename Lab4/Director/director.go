@@ -86,15 +86,14 @@ func (s *DirectorServer) Piso1(ctx context.Context, req *pb.Piso1Request) (*pb.P
 		probRifle := rand.Int31n(100 - probEscopeta)
 		probPunos := 100 - probEscopeta - probRifle
 		probabilidades[mercenario.Id] = probEscopeta
+		log.Println("Probpunos: ", probPunos)
 		// Enviar mensaje al mercenario con la probabilidad de supervivencia
-		return probPunos
 	}
 
 	// Simulación de eliminación de mercenarios basada en probabilidades
 	// Eliminar mercenarios basados en las probabilidades calculadas
 	// Aquí puedes enviar mensajes de eliminación a los mercenarios que hayan fallado
 	// Simulación de eliminación de mercenarios
-
 	log.Println("Finalizando Piso 1")
 	return &pb.Piso1Response{}, nil
 }
