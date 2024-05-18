@@ -83,33 +83,32 @@ func initializeDirectorConnection() pb.DirectorServiceClient {
 
 // Enviar mensaje al Director para el Piso 1
 func EnviarMensajePiso1(client pb.DirectorServiceClient, mercenarios []*pb.Mercenario) {
-	req := &pb.Piso1Request{
-		Mercenarios: mercenarios,
-	}
+	//req := &pb.Piso1Request{
+	//	Mercenarios: mercenarios,
+	//}
+
 	// Enviar el mensaje al Director
 	// Manejar la respuesta si es necesario
-	return req
 }
 
 // Enviar mensaje al Director para el Piso 2
 func EnviarMensajePiso2(client pb.DirectorServiceClient, decisiones []*pb.Decision) {
-	req := &pb.Piso2Request{
-		Decisiones: decisiones,
-	}
+	//req := &pb.Piso2Request{
+	//	Decisiones: decisiones,
+	//}
+
 	// Enviar el mensaje al Director
 	// Manejar la respuesta si es necesario
-	return req
 }
 
 // Enviar mensaje al Director para el Piso 3
 func EnviarMensajePiso3(client pb.DirectorServiceClient, numeros []int32) {
-	req := &pb.Piso3Request{
-		Numeros: numeros,
-	}
+	//req := &pb.Piso3Request{
+	//	Numeros: numeros,
+	//}
 
 	// Enviar el mensaje al Director
 	// Manejar la respuesta si es necesario
-	return req
 }
 
 func main() {
