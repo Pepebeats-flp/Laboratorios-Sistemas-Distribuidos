@@ -42,7 +42,7 @@ func (m *Mercenario) InformarEstadoPreparacion(client pb.DirectorServiceClient) 
 // TomarDecision toma una decisión en base a la situación del piso actual
 func (m *Mercenario) TomarDecision(client pb.DirectorServiceClient) {
 	req := &pb.DecisionRequest{
-		MercenarioId: m.ID,
+		MercenarioId: m.Name,   // Cambiado para pasar el nombre del mercenario
 		Piso:         "Piso_1", // Ejemplo de piso
 	}
 	resp, err := client.Decision(context.Background(), req)
@@ -53,7 +53,7 @@ func (m *Mercenario) TomarDecision(client pb.DirectorServiceClient) {
 }
 
 // VerMontoDoshBank solicita al Director el monto acumulado en el Dosh Bank
-func (m *Mercenario) VerMontoDoshBank(client pb.DirectorServiceClient) {
+func VerMontoDoshBank(client pb.DirectorServiceClient) {
 	req := &pb.MontoRequest{
 		Solicitud: "VerMonto",
 	}
@@ -106,8 +106,6 @@ func main() {
 	// Simular un retraso antes de pedir el monto
 	time.Sleep(2 * time.Second)
 
-	// Solicitar ver el monto acumulado en el Dosh Bank
-	for _, mercenario := range mercenarios {
-		mercenario.VerMontoDoshBank(directorClient)
-	}
+	// Solicitar ver el monto acumulado en el Dosh Bank una vez
+	VerMontoDoshBank(directorClient)
 }

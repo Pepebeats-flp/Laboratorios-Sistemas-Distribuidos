@@ -30,7 +30,7 @@ func initializeRabbitMQConnection() {
 	failOnError(err, "Failed to open a channel")
 }
 
-func sendDeathMessage(mercenary string, floor string) {
+func sendDeathMessage(mercenaryName string, floor string) {
 	// Declare a queue if not already declared
 	q, err := ch.QueueDeclare(
 		"eliminated_mercenaries", // name
@@ -42,7 +42,7 @@ func sendDeathMessage(mercenary string, floor string) {
 	)
 	failOnError(err, "Failed to declare a queue")
 
-	body := mercenary + "," + floor
+	body := mercenaryName + "," + floor
 
 	// Publish a message
 	err = ch.Publish(
@@ -56,7 +56,7 @@ func sendDeathMessage(mercenary string, floor string) {
 		})
 	failOnError(err, "Failed to publish a message")
 
-	log.Printf(" [x] Mercenary %s died on floor %s", mercenary, floor[5:])
+	log.Printf(" [x] Mercenary %s died on floor %s", mercenaryName, floor[5:])
 }
 
 func getTotalAmount() int32 {
@@ -79,8 +79,8 @@ func (s *DirectorServer) Preparacion(ctx context.Context, req *pb.PreparacionReq
 
 // Implementación del servicio Decision
 func (s *DirectorServer) Decision(ctx context.Context, req *pb.DecisionRequest) (*pb.DecisionResponse, error) {
-	log.Printf("Solicitud de decisión recibida para el mercenario: %s, Piso: %s", req.MercenarioName, req.Piso)
-	sendDeathMessage(req.MercenarioName, req.Piso)
+	log.Printf("Solicitud de decisión recibida para el mercenario ID: %s, Piso: %s", req.MercenarioId, req.Piso)
+	sendDeathMessage(req.MercenarioId, req.Piso)
 	return &pb.DecisionResponse{Mensaje: "Decisión recibida correctamente"}, nil
 }
 
