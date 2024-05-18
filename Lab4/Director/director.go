@@ -86,7 +86,7 @@ func (s *DirectorServer) Decision(ctx context.Context, req *pb.DecisionRequest) 
 // Implementación del servicio ObtenerMonto
 func (s *DirectorServer) ObtenerMonto(ctx context.Context, req *pb.MontoRequest) (*pb.MontoResponse, error) {
 	// Conectar al servidor gRPC del banco
-	conn, err := grpc.Dial("dist043.inf.santiago.usm.cl:50051", grpc.WithInsecure())
+	conn, err := grpc.Dial("dist097.inf.santiago.usm.cl:50051", grpc.WithInsecure())
 	if err != nil {
 		panic("cannot connect with server " + err.Error())
 	}
