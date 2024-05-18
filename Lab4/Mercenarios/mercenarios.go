@@ -36,7 +36,9 @@ func (m *Mercenario) InformarEstadoPreparacion(client pb.DirectorServiceClient) 
 	if err != nil {
 		log.Fatalf("Error al informar preparación: %v", err)
 	}
-	log.Printf("Respuesta del Director: %s", resp.Mensaje)
+	if resp.Mensaje == "" {
+		log.Printf("Preparación nula")
+	}
 }
 
 // TomarDecision toma una decisión en base a la situación del piso actual
@@ -49,7 +51,10 @@ func (m *Mercenario) TomarDecision(client pb.DirectorServiceClient) {
 	if err != nil {
 		log.Fatalf("Error al tomar decisión: %v", err)
 	}
-	log.Printf("Respuesta del Director: %s", resp.Mensaje)
+	if resp.Mensaje == "" {
+		log.Printf("Decisión nula")
+	}
+
 }
 
 // VerMontoDoshBank solicita al Director el monto acumulado en el Dosh Bank
@@ -93,6 +98,7 @@ func main() {
 	// Informar estado de preparación para cada mercenario
 	for _, mercenario := range mercenarios {
 		mercenario.InformarEstadoPreparacion(directorClient)
+		log.Printf("Mercenario %s (%s) informa que está preparado", mercenario.Name, mercenario.ID)
 	}
 
 	// Simular un retraso antes de eliminar a los mercenarios
@@ -101,6 +107,7 @@ func main() {
 	// Simular la eliminación de los mercenarios
 	for _, mercenario := range mercenarios {
 		mercenario.TomarDecision(directorClient)
+		log.Printf("Mercenario %s toma una decisión en el piso %s", mercenario.Name, "Piso_1")
 	}
 
 	// Simular un retraso antes de pedir el monto
@@ -108,4 +115,5 @@ func main() {
 
 	// Solicitar ver el monto acumulado en el Dosh Bank una vez
 	VerMontoDoshBank(directorClient)
+
 }

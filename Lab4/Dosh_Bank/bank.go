@@ -117,12 +117,11 @@ func main() {
 	// Escuchar mensajes de RabbitMQ
 	for d := range msgs {
 		go func() {
-			log.Printf("gRPC server listening on port 50051")
 			if err := grpcServer.Serve(lis); err != nil {
 				log.Fatalf("Failed to serve: %v", err)
 			}
 		}()
-		log.Printf("Received a message: %s", d.Body)
+		log.Println("Murió un mercenario: ", string(d.Body)+" en el piso: "+string(d.Body))
 		body := string(d.Body)
 
 		components := strings.Split(body, ",")
@@ -132,9 +131,8 @@ func main() {
 		// Incrementar el total
 		s.total += 100000000
 
-		log.Printf(" [x] Amount: %d\n", s.total)
+		log.Println("Monto acumulado en Dosh Bank: ", s.total)
 
 		writeToFile(mercenary, floor, fmt.Sprintf("%d", s.total))
 	}
-	log.Printf(" [x] File content: %s", readFromFile())
 }
