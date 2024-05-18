@@ -87,6 +87,7 @@ func (s *DirectorServer) Piso1(ctx context.Context, req *pb.Piso1Request) (*pb.P
 		probPunos := 100 - probEscopeta - probRifle
 		probabilidades[mercenario.Id] = probEscopeta
 		// Enviar mensaje al mercenario con la probabilidad de supervivencia
+		return probPunos
 	}
 
 	// Simulación de eliminación de mercenarios basada en probabilidades
