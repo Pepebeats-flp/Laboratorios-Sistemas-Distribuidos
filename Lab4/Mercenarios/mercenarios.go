@@ -88,7 +88,7 @@ func EnviarMensajePiso1(client pb.DirectorServiceClient, mercenarios []*pb.Merce
 	}
 	// Enviar el mensaje al Director
 	// Manejar la respuesta si es necesario
-
+	return req
 }
 
 // Enviar mensaje al Director para el Piso 2
@@ -106,9 +106,10 @@ func EnviarMensajePiso3(client pb.DirectorServiceClient, numeros []int32) {
 	req := &pb.Piso3Request{
 		Numeros: numeros,
 	}
-	return req
+
 	// Enviar el mensaje al Director
 	// Manejar la respuesta si es necesario
+	return req
 }
 
 func main() {
