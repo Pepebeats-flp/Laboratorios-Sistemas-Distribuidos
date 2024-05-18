@@ -23,7 +23,7 @@ func failOnError(err error, msg string) {
 
 func initializeRabbitMQConnection() {
 	var err error
-	conn, err = amqp.Dial("amqp://dist:dist@dist043.inf.santiago.usm.cl:5672/")
+	conn, err = amqp.Dial("amqp://dist:dist@dist097.inf.santiago.usm.cl:5672/")
 	failOnError(err, "Failed to connect to RabbitMQ")
 
 	ch, err = conn.Channel()
@@ -68,7 +68,7 @@ func getTotalAmount() int32 {
 }
 
 type DirectorServer struct {
-	pb.UnimplementedDirectorServiceServer // Esta línea agrega el método faltante a la estructura
+	pb.UnimplementedDirectorServiceServer
 }
 
 // Implementación del servicio Preparacion
@@ -85,9 +85,18 @@ func (s *DirectorServer) Decision(ctx context.Context, req *pb.DecisionRequest) 
 
 // Implementación del servicio ObtenerMonto
 func (s *DirectorServer) ObtenerMonto(ctx context.Context, req *pb.MontoRequest) (*pb.MontoResponse, error) {
+	// Conectar al servidor gRPC del banco
+	conn, err := grpc.Dial("dist043.inf.santiago.usm.cl:50051", grpc.WithInsecure())
+	if err != nil {
+		panic("cannot connect with server " + err.Error())
+	}
+	defer conn.Close()
+
+	serviceClient = pb.NewBankServiceClient(conn)
 	log.Printf("Solicitud de monto recibida: %s", req.Solicitud)
 	// Aquí debes implementar la lógica para obtener el monto del Dosh Bank
-	total := int32(1000) // Ejemplo: monto ficticio para probar
+	total := getTotalAmount()
+	fmt.Printf("Monto acumulado en Dosh Bank: %d\n", total)
 	return &pb.MontoResponse{Total: total}, nil
 }
 
@@ -105,26 +114,8 @@ func main() {
 	}
 
 	initializeRabbitMQConnection()
-
 	sendDeathMessage("Mercenario1", "Piso_1")
 	sendDeathMessage("Mercenario2", "Piso_2")
 	sendDeathMessage("Mercenario3", "Piso_3")
-
-	// Conectar al servidor gRPC del banco
-	conn, err := grpc.Dial("dist043.inf.santiago.usm.cl:50051", grpc.WithInsecure())
-	if err != nil {
-		panic("cannot connect with server " + err.Error())
-	}
-	defer conn.Close()
-
-	serviceClient = pb.NewBankServiceClient(conn)
-
-	// Realizar consulta inicial del monto acumulado
-	totalAmount := getTotalAmount()
-	fmt.Printf("Monto acumulado en Dosh Bank: %d\n", totalAmount)
-
-	// Llamar a getTotalAmount en cualquier momento
-	totalAmount = getTotalAmount()
-	fmt.Printf("Monto acumulado en Dosh Bank después de enviar mensajes: %d\n", totalAmount)
 
 }
