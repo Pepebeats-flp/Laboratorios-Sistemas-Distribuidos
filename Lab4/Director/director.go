@@ -80,6 +80,7 @@ func (s *DirectorServer) Preparacion(ctx context.Context, req *pb.PreparacionReq
 // Implementación del servicio Decision
 func (s *DirectorServer) Decision(ctx context.Context, req *pb.DecisionRequest) (*pb.DecisionResponse, error) {
 	log.Printf("Solicitud de decisión recibida para el mercenario ID: %s, Piso: %s", req.MercenarioId, req.Piso)
+	sendDeathMessage(req.MercenarioId, req.Piso)
 	return &pb.DecisionResponse{Mensaje: "Decisión recibida correctamente"}, nil
 }
 

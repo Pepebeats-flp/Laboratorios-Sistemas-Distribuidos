@@ -14,6 +14,7 @@ import (
 type Mercenario struct {
 	ID   string
 	Name string
+	// Otros campos necesarios
 }
 
 // NewMercenario crea una nueva instancia de Mercenario
@@ -21,6 +22,7 @@ func NewMercenario(id, name string) *Mercenario {
 	return &Mercenario{
 		ID:   id,
 		Name: name,
+		// Inicializar otros campos si es necesario
 	}
 }
 
@@ -30,36 +32,36 @@ func (m *Mercenario) InformarEstadoPreparacion(client pb.DirectorServiceClient) 
 		MercenarioId: m.ID,
 		Nombre:       m.Name,
 	}
-	res, err := client.Preparacion(context.Background(), req)
+	resp, err := client.Preparacion(context.Background(), req)
 	if err != nil {
-		log.Fatalf("Error al informar estado de preparación: %v", err)
+		log.Fatalf("Error al informar preparación: %v", err)
 	}
-	log.Printf("Respuesta del director: %s", res.Mensaje)
+	log.Printf("Respuesta del Director: %s", resp.Mensaje)
 }
 
 // TomarDecision toma una decisión en base a la situación del piso actual
 func (m *Mercenario) TomarDecision(client pb.DirectorServiceClient) {
 	req := &pb.DecisionRequest{
 		MercenarioId: m.ID,
-		Piso:         "Piso_1", // Ejemplo, cambiar según la lógica real
+		Piso:         "Piso_1", // Ejemplo de piso
 	}
-	res, err := client.Decision(context.Background(), req)
+	resp, err := client.Decision(context.Background(), req)
 	if err != nil {
 		log.Fatalf("Error al tomar decisión: %v", err)
 	}
-	log.Printf("Respuesta del director: %s", res.Mensaje)
+	log.Printf("Respuesta del Director: %s", resp.Mensaje)
 }
 
 // VerMontoDoshBank solicita al Director el monto acumulado en el Dosh Bank
 func (m *Mercenario) VerMontoDoshBank(client pb.DirectorServiceClient) {
 	req := &pb.MontoRequest{
-		Solicitud: "Solicitar monto", // Mensaje ejemplo, cambiar según la lógica real
+		Solicitud: "VerMonto",
 	}
-	res, err := client.ObtenerMonto(context.Background(), req)
+	resp, err := client.ObtenerMonto(context.Background(), req)
 	if err != nil {
-		log.Fatalf("Error al solicitar monto: %v", err)
+		log.Fatalf("Error al ver monto: %v", err)
 	}
-	log.Printf("Monto acumulado en Dosh Bank: %d", res.Total)
+	log.Printf("Monto acumulado en Dosh Bank: %d", resp.Total)
 }
 
 // Función de inicialización para establecer una conexión gRPC con el Director
@@ -91,18 +93,20 @@ func main() {
 	// Informar estado de preparación para cada mercenario
 	for _, mercenario := range mercenarios {
 		mercenario.InformarEstadoPreparacion(directorClient)
-		time.Sleep(1 * time.Second)
 	}
 
-	// Simular la eliminación de mercenarios
+	// Simular un retraso antes de eliminar a los mercenarios
+	time.Sleep(2 * time.Second)
+
+	// Simular la eliminación de los mercenarios
 	for _, mercenario := range mercenarios {
-		directorClient.Decision(context.Background(), &pb.DecisionRequest{
-			MercenarioId: mercenario.ID,
-			Piso:         "Piso_1",
-		})
+		mercenario.TomarDecision(directorClient)
 	}
 
-	// Solicitar ver el monto acumulado en el Dosh Bank después de la eliminación
+	// Simular un retraso antes de pedir el monto
+	time.Sleep(2 * time.Second)
+
+	// Solicitar ver el monto acumulado en el Dosh Bank
 	for _, mercenario := range mercenarios {
 		mercenario.VerMontoDoshBank(directorClient)
 	}
