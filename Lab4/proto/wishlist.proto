@@ -13,3 +13,43 @@ message GetTotalResponse {
 service BankService {
     rpc GetTotal(GetTotalRequest) returns (GetTotalResponse);
 }
+
+// Mensaje para la solicitud de preparación del mercenario
+message PreparacionRequest {
+    string mercenario_id = 1;
+    string nombre = 2;
+}
+
+// Mensaje para la respuesta de preparación del mercenario
+message PreparacionResponse {
+    string mensaje = 1;
+}
+
+// Mensaje para la solicitud de decisión del mercenario
+message DecisionRequest {
+    string mercenario_id = 1;
+    string piso = 2;
+}
+
+// Mensaje para la respuesta de decisión del mercenario
+message DecisionResponse {
+    string mensaje = 1;
+}
+
+// Mensaje para la solicitud de monto acumulado en el Dosh Bank
+message MontoRequest {
+    string solicitud = 1;
+}
+
+// Mensaje para la respuesta de monto acumulado en el Dosh Bank
+message MontoResponse {
+    int32 total = 1;
+}
+
+// Definición del servicio del director
+service DirectorService {
+    rpc Preparacion(PreparacionRequest) returns (PreparacionResponse) {}
+    rpc Decision(DecisionRequest) returns (DecisionResponse) {}
+    rpc ObtenerMonto(MontoRequest) returns (MontoResponse) {}
+}
+
